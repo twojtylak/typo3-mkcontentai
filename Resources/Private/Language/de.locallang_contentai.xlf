@@ -189,6 +189,14 @@
             	<source>Alt text generate</source>
             	<target>Alt-Text generieren</target>
             </trans-unit>
+			<trans-unit id="labelSettingsPageCurrentGroup" resname="labelSettingsPageCurrentGroup">
+            	<source>Enable settings page for current group</source>
+            	<target>Aktivieren der Einstellungsseite für die aktuelle Gruppe</target>
+            </trans-unit>
+			<trans-unit id="labelMkcontentaiPermissions" resname="labelMkcontentaiPermissions">
+            	<source>MKContentAI permissions</source>
+            	<target>MKContentAI Berechtigungen</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

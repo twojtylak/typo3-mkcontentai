@@ -120,6 +120,9 @@
 			<trans-unit id="labelAiGenerateText2" resname="labelAiGenerateText2">
             	<source>Generate alt text by AI</source>
             </trans-unit>
+			<trans-unit id="labelErrorSettingsPermissions" resname="labelErrorSettingsPermissions">
+            	<source>You don't have permissions to go Settings Page!</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -144,6 +144,12 @@
 			<trans-unit id="labelContextMenuAlttext" resname="labelContextMenuAlttext">
             	<source>Alt text generate</source>
             </trans-unit>
+			<trans-unit id="labelSettingsPageCurrentGroup" resname="labelSettingsPageCurrentGroup">
+            	<source>Enable settings page for current group</source>
+            </trans-unit>
+			<trans-unit id="labelMkcontentaiPermissions" resname="labelMkcontentaiPermissions">
+            	<source>MKContentAI permissions</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>
