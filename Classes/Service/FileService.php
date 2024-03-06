@@ -15,8 +15,10 @@
 
 namespace DMK\MkContentAi\Service;
 
+use DMK\MkContentAi\DTO\FileAltTextDTO;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\Index\MetaDataRepository;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
@@ -26,17 +28,18 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class FileService
 {
+    public GraphicalFunctions $graphicalFunctions;
+    public MetaDataRepository $metaDataRepository;
     private StorageRepository $storageRepository;
     private ResourceFactory $resourceFactory;
-    public GraphicalFunctions $graphicalFunctions;
-
     private string $path = 'mkcontentai';
 
     public function __construct(?string $folder = null)
     {
         $this->path = 'mkcontentai/'.$folder;
-        $this->storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
         $this->graphicalFunctions = GeneralUtility::makeInstance(GraphicalFunctions::class);
+        $this->metaDataRepository = GeneralUtility::makeInstance(MetaDataRepository::class);
+        $this->storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
         $this->resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
     }
 
@@ -102,23 +105,49 @@ class FileService
     }
 
     /**
-     * @return Folder|\TYPO3\CMS\Core\Resource\InaccessibleFolder
+     * @return \TYPO3\CMS\Core\Resource\File[]
      */
-    private function getFolder(): Folder
+    public function getFilesFromExistingFolder(?string $folder): array
     {
-        return $this->getStorage()->getFolder($this->path);
-    }
+        $storage = $this->getStorage();
 
-    private function getStorage(): ResourceStorage
-    {
-        $storage = $this->storageRepository->getDefaultStorage();
-        if (is_null($storage)) {
-            $translatedMessage = LocalizationUtility::translate('labelErrorStorage', 'mkcontentai') ?? '';
+        if (null === $folder) {
+            $folder = $storage->createFolder($this->path);
 
-            throw new \Exception($translatedMessage);
+            return $storage->getFilesInFolder($folder);
         }
 
-        return $storage;
+        return $storage->getFilesInFolder($this->resourceFactory->getFolderObjectFromCombinedIdentifier($folder));
+    }
+
+    /**
+     * @return array<int|string, FileAltTextDTO>
+     */
+    public function getFilesWithoutAltText(?string $folder): array
+    {
+        $altTextFromImages = $this->getAltTextFromMetadataOfFiles($folder);
+
+        return \array_filter(
+            $altTextFromImages,
+            fn (FileAltTextDTO $record) => empty($record->getAltText())
+        );
+    }
+
+    /**
+     * @return array<int|string, FileAltTextDTO>
+     */
+    public function getAltTextFromMetadataOfFiles(?string $folder): array
+    {
+        $listOfFiles = $this->getFilesFromExistingFolder($folder);
+        $filesAltText = [];
+        foreach ($listOfFiles as $file) {
+            $filesAltText[$file->getProperty('uid')] = FileAltTextDTO::fromArray(
+                $file->getProperty('uid'),
+                $this->metaDataRepository->findByFileUid($file->getProperty('uid'))['alternative']
+            );
+        }
+
+        return $filesAltText;
     }
 
     public function saveTempBase64Image(string $base64): string
@@ -158,5 +187,25 @@ class FileService
         }
 
         return $file;
+    }
+
+    private function getStorage(): ResourceStorage
+    {
+        $storage = $this->storageRepository->getDefaultStorage();
+        if (is_null($storage)) {
+            $translatedMessage = LocalizationUtility::translate('labelErrorStorage', 'mkcontentai') ?? '';
+
+            throw new \Exception($translatedMessage);
+        }
+
+        return $storage;
+    }
+
+    /**
+     * @return Folder|\TYPO3\CMS\Core\Resource\InaccessibleFolder
+     */
+    private function getFolder(): Folder
+    {
+        return $this->getStorage()->getFolder($this->path);
     }
 }

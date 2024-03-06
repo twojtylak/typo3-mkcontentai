@@ -82,16 +82,28 @@
             	<source>AI alt tag generation</source>
             </trans-unit>
 			<trans-unit id="labelAiGenerated" resname="labelAiGenerated">
-            	<source>AI generated</source>
+            	<source>AI generated alt texts with</source>
             </trans-unit>
 			<trans-unit id="labelAltTextForImage" resname="labelAltTextForImage">
-            	<source>alt text for image is</source>
+            	<source>Alt text for image is</source>
             </trans-unit>
 			<trans-unit id="labelInOrder" resname="labelInOrder">
             	<source>In order to change language - go to</source>
             </trans-unit>
 			<trans-unit id="labelApprove" resname="labelApprove">
             	<source>Approve</source>
+            </trans-unit>
+			<trans-unit id="labelApproveAll" resname="labelApproveAll">
+            	<source>Approve all</source>
+            </trans-unit>
+			<trans-unit id="labelDeclineAll" resname="labelDeclineAll">
+            	<source>Decline all</source>
+            </trans-unit>
+			<trans-unit id="labelDecline" resname="labelDecline">
+            	<source>Decline</source>
+            </trans-unit>
+			<trans-unit id="labelSummaryAltTextsAction" resname="labelSummaryAltTextsAction">
+            	<source>There are %s images in the folder %s, %s generated alt texts in this session, %s had already alt texts.</source>
             </trans-unit>
 			<trans-unit id="labelChooseApi" resname="labelChooseApi">
             	<source>Choose image generation API:</source>
@@ -143,6 +155,9 @@
             </trans-unit>
 			<trans-unit id="labelContextMenuAlttext" resname="labelContextMenuAlttext">
             	<source>Alt text generate</source>
+            </trans-unit>
+			<trans-unit id="labelGeneratedTexts" resname="labelGeneratedTexts">
+            	<source>Alt Text has been updated for Image: </source>
             </trans-unit>
 			<trans-unit id="labelSettingsPageCurrentGroup" resname="labelSettingsPageCurrentGroup">
             	<source>Enable settings page for current group</source>

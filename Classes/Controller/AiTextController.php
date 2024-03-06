@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace DMK\MkContentAi\Controller;
 
+use DMK\MkContentAi\DTO\FileAltTextDTO;
 use DMK\MkContentAi\Service\AiAltTextService;
 use DMK\MkContentAi\Service\SiteLanguageService;
 use Psr\Http\Message\ResponseInterface;
@@ -63,6 +64,53 @@ class AiTextController extends BaseController
         return $this->handleResponse();
     }
 
+    public function altTextsAction(string $folderName): ResponseInterface
+    {
+        $files = $this->getAltTextForFiles($folderName);
+        $countGeneratedAltTexts = count($files);
+        $listOfFilesInFolder = count($this->aiAltTextService->getListOfFiles($folderName));
+        $existGeneratedAltTexts = $listOfFilesInFolder - $countGeneratedAltTexts;
+        if (null == $files) {
+            $translatedMessage = LocalizationUtility::translate('labelInfoAlttextAlreadyDefined', 'mkcontentai') ?? '';
+            $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
+
+            return $this->handleResponse();
+        }
+
+        $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/AltText');
+
+        $this->view->assignMultiple(
+            [
+                'files' => $files,
+                'folderName' => $folderName,
+                'languageName' => $this->siteLanguageService->getFullLanguageName(),
+                'countGeneratedAltTexts' => $countGeneratedAltTexts,
+                'listOfFilesInFolder' => $listOfFilesInFolder,
+                'existGeneratedAltTexts' => $existGeneratedAltTexts,
+            ]
+        );
+
+        return $this->handleResponse();
+    }
+
+    public function altTextsSaveAction(string $folderName): ResponseInterface
+    {
+        $altTexts = $this->getAltTextForFiles($folderName);
+        $this->aiAltTextService->saveAltTextsMetaData($altTexts);
+        $translatedMessage = LocalizationUtility::translate('labelAlttextsGenerated', 'mkcontentai') ?? '';
+        $this->addFlashMessage($translatedMessage, '', AbstractMessage::OK);
+        $this->view->assignMultiple(
+            [
+                'files' => $altTexts,
+                'folderName' => $folderName,
+                'languageName' => $this->siteLanguageService->getFullLanguageName(),
+            ]
+        );
+
+        return $this->handleResponse();
+    }
+
     public function altTextSaveAction(File $file): ResponseInterface
     {
         $altText = $this->getAltTextForFile($file);
@@ -93,6 +141,21 @@ class AiTextController extends BaseController
         }
 
         return $altTextFromFile;
+    }
+
+    /**
+     * @return array<int|string, FileAltTextDTO>
+     */
+    private function getAltTextForFiles(string $folderName): array
+    {
+        $finalFilesWithAltText = [];
+        try {
+            $finalFilesWithAltText = $this->aiAltTextService->getMultipleAltTextsForImages($folderName);
+        } catch (\Exception $e) {
+            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+        }
+
+        return $finalFilesWithAltText;
     }
 
     protected function handleResponse(): ResponseInterface

@@ -142,6 +142,18 @@
             	<source>Generate alt text by AI</source>
                 <target>Alt-Text durch AI generieren</target>
             </trans-unit>
+			<trans-unit id="labelAlttextsGenerated" resname="labelAlttextsGenerated">
+            	<source>Alt text has been generated successfully</source>
+            	<target>Alt-Text wurde erfolgreich generiert</target>
+            </trans-unit>
+			<trans-unit id="labelInfoAlttextAlreadyDefined" resname="labelInfoAlttextAlreadyDefined">
+            	<source>All Images in given folder have already Alt Text defined</source>
+            	<target>Alle Bilder im angegebenen Ordner haben bereits einen Alt-Text definiert</target>
+            </trans-unit>
+			<trans-unit id="labelFileParameterError" resname="labelFileParameterError">
+            	<source>File parameter could not be found!</source>
+            	<target>Dateiparameter konnte nicht gefunden werden!</target>
+            </trans-unit>
 			<trans-unit id="labelErrorSettingsPermissions" resname="labelErrorSettingsPermissions">
             	<source>You don't have permissions to go Settings Page!</source>
             	<target>Sie haben keine Berechtigung, die Seite Einstellungen aufzurufen!</target>
