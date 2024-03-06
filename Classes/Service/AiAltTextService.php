@@ -17,16 +17,19 @@ declare(strict_types=1);
 
 namespace DMK\MkContentAi\Service;
 
+use DMK\MkContentAi\DTO\FileAltTextDTO;
 use DMK\MkContentAi\Http\Client\AltTextClient;
 use TYPO3\CMS\Extbase\Domain\Model\File;
 
 class AiAltTextService
 {
     public AltTextClient $altTextClient;
+    public FileService $fileService;
 
-    public function __construct(AltTextClient $altTextClient)
+    public function __construct(AltTextClient $altTextClient, FileService $fileService)
     {
         $this->altTextClient = $altTextClient;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -45,5 +48,78 @@ class AiAltTextService
         }
 
         return $altText;
+    }
+
+    /**
+     * @return \TYPO3\CMS\Core\Resource\File[]
+     */
+    public function getListOfFiles(string $folderName): array
+    {
+        return $this->fileService->getFilesFromExistingFolder($folderName);
+    }
+
+    /**
+     * @return array<int|string, FileAltTextDTO>
+     */
+    public function getAltTextsOfImagesFromFolder(string $folderName): array
+    {
+        return $this->fileService->getAltTextFromMetadataOfFiles($folderName);
+    }
+
+    /**
+     * @return array<int|string, FileAltTextDTO>
+     */
+    public function getEmptyAltTextFiles(string $folderName): array
+    {
+        return $this->fileService->getFilesWithoutAltText($folderName);
+    }
+
+    public function getFileById(string $fileId): ?File
+    {
+        return $this->fileService->getFileById($fileId);
+    }
+
+    /**
+     * @return array<int|string, FileAltTextDTO>
+     */
+    public function getMultipleAltTextsForImages(string $folderName): array
+    {
+        $finalFilesWithAltText = [];
+        $files = $this->getListOfFiles($folderName);
+        $emptyAltTextFiles = $this->getEmptyAltTextFiles($folderName);
+        $supportedFormatsImages = ['jpg', 'png', 'gif', 'webp', 'bmp'];
+
+        try {
+            foreach ($files as $file) {
+                $fileUid = $file->getUid();
+                $fileById = $this->getFileById((string) $fileUid);
+
+                if (!isset($emptyAltTextFiles[$fileUid]) || null == $fileById || !in_array($file->getExtension(), $supportedFormatsImages)) {
+                    continue;
+                }
+                $emptyAltTextFiles[$fileUid]->setAltText($this->getAltText($fileById));
+                $emptyAltTextFiles[$fileUid]->setFile($file);
+                $finalFilesWithAltText[$fileUid] = $emptyAltTextFiles[$fileUid];
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+
+        return $finalFilesWithAltText;
+    }
+
+    /**
+     * @param FileAltTextDTO[] $altTexts
+     */
+    public function saveAltTextsMetaData(array $altTexts): void
+    {
+        foreach ($altTexts as $fileAltTextDTO) {
+            if (null == $fileAltTextDTO->getFile()) {
+                continue;
+            }
+            $metadata = $fileAltTextDTO->getFile()->getMetaData();
+            $metadata->offsetSet('alternative', $fileAltTextDTO->getAltText());
+            $metadata->save();
+        }
     }
 }

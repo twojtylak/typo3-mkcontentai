@@ -31,6 +31,8 @@ namespace DMK\MkContentAi\ContextMenu;
 use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ContentAiItemProvider extends AbstractProvider
@@ -44,23 +46,29 @@ class ContentAiItemProvider extends AbstractProvider
      * }>
      */
     protected $itemsConfiguration = [
-        'upscale' => [
+        'fileUpscale' => [
             'type' => 'item',
             'label' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelContextMenuUpscale',
             'iconIdentifier' => 'actions-rocket',
             'callbackAction' => 'upscale',
         ],
-        'extend' => [
+        'fileExtend' => [
             'type' => 'item',
             'label' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelContextMenuExtend',
             'iconIdentifier' => 'actions-rocket',
             'callbackAction' => 'extend',
         ],
-        'alt' => [
+        'fileAlt' => [
             'type' => 'item',
             'label' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelContextMenuAlttext',
             'iconIdentifier' => 'actions-rocket',
             'callbackAction' => 'alt',
+        ],
+        'folderAltTexts' => [
+            'type' => 'item',
+            'label' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelContextMenuAlttext',
+            'iconIdentifier' => 'actions-rocket',
+            'callbackAction' => 'altTexts',
         ],
     ];
 
@@ -105,8 +113,11 @@ class ContentAiItemProvider extends AbstractProvider
     {
         $typo3Version = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
         $majorVersion = $typo3Version->getMajorVersion();
-
-        $parameters = $this->getParametersBasedOnVersion($majorVersion);
+        if (11 === $majorVersion) {
+            $parameters = $this->getParametersForVersion11($itemName);
+        } elseif (12 === $majorVersion) {
+            $parameters = $this->getParametersForVersion12($itemName);
+        }
         $pathInfo = $this->getPathInfo($itemName, $majorVersion);
 
         $this->updateParametersForItemName($parameters, $itemName, $majorVersion);
@@ -129,16 +140,17 @@ class ContentAiItemProvider extends AbstractProvider
     private function updateParametersForItemName(array &$parameters, string $itemName, int $version): void
     {
         $actionMapping = [
-            'upscale' => 'upscale',
-            'extend' => 'cropAndExtend',
-            'alt' => 'altText',
+            'fileUpscale' => 'upscale',
+            'fileExtend' => 'cropAndExtend',
+            'fileAlt' => 'altText',
+            'folderAltTexts' => 'altTexts',
         ];
 
         if (11 === $version) {
             $parameters['tx_mkcontentai_system_mkcontentaicontentai']['action'] = $actionMapping[$itemName] ?? '';
         }
 
-        if ('alt' === $itemName && 11 === $version) {
+        if (('fileAlt' === $itemName || 'folderAltTexts' === $itemName) && 11 === $version) {
             $parameters['tx_mkcontentai_system_mkcontentaicontentai']['controller'] = 'AiText';
         }
     }
@@ -146,10 +158,15 @@ class ContentAiItemProvider extends AbstractProvider
     /**
      * @return array<string, mixed>
      */
-    private function getParametersBasedOnVersion(int $version): array
+    private function getParametersForVersion11(string $itemName): array
     {
-        if (12 === $version) {
-            return ['file' => $this->identifier];
+        if ('folderAltTexts' === $itemName) {
+            return [
+                'tx_mkcontentai_system_mkcontentaicontentai' => [
+                    'controller' => 'AiImage',
+                    'folderName' => $this->identifier,
+                ],
+            ];
         }
 
         return [
@@ -160,19 +177,35 @@ class ContentAiItemProvider extends AbstractProvider
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function getParametersForVersion12(string $itemName): array
+    {
+        if ('folderAltTexts' === $itemName) {
+            return ['folderName' => $this->identifier];
+        }
+
+        return ['file' => $this->identifier];
+    }
+
     private function getPathInfo(string $itemName, int $version): string
     {
         $pathInfoMapping = [
-            'upscale' => [
+            'fileUpscale' => [
                 12 => '/module/mkcontentai/AiImage/upscale',
                 11 => '/module/system/MkcontentaiContentai',
             ],
-            'extend' => [
+            'fileExtend' => [
                 12 => '/module/mkcontentai/AiImage/cropAndExtend',
                 11 => '/module/system/MkcontentaiContentai',
             ],
-            'alt' => [
+            'fileAlt' => [
                 12 => '/module/mkcontentai/AiText/altText',
+                11 => '/module/system/MkcontentaiContentai',
+            ],
+            'folderAltTexts' => [
+                12 => '/module/mkcontentai/AiText/altTexts',
                 11 => '/module/system/MkcontentaiContentai',
             ],
         ];
@@ -190,10 +223,13 @@ class ContentAiItemProvider extends AbstractProvider
         }
         $canRender = false;
         switch ($itemName) {
-            case 'upscale':
-            case 'extend':
-            case 'alt':
+            case 'fileUpscale':
+            case 'fileExtend':
+            case 'fileAlt':
                 $canRender = $this->isImage();
+                break;
+            case 'folderAltTexts':
+                $canRender = $this->isFolder();
                 break;
         }
 
@@ -206,5 +242,16 @@ class ContentAiItemProvider extends AbstractProvider
     protected function isImage(): bool
     {
         return 'sys_file' === $this->table && preg_match('/\.(png|jpg)$/', $this->identifier);
+    }
+
+    /**
+     * Helper method checking if resource is a folder and exist in the storage.
+     */
+    protected function isFolder(): bool
+    {
+        $resourceStorage = GeneralUtility::makeInstance(ResourceFactory::class);
+        $object = $resourceStorage->retrieveFileOrFolderObject($this->identifier);
+
+        return $object instanceof Folder;
     }
 }
