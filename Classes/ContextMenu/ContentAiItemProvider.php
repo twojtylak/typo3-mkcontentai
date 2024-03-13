@@ -28,6 +28,10 @@ namespace DMK\MkContentAi\ContextMenu;
  * The TYPO3 project - inspiring people to share!
  */
 
+use DMK\MkContentAi\Controller\AiImageController;
+use DMK\MkContentAi\Controller\SettingsController;
+use DMK\MkContentAi\Http\Client\OpenAiClient;
+use DMK\MkContentAi\Http\Client\StabilityAiClient;
 use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -214,6 +218,23 @@ class ContentAiItemProvider extends AbstractProvider
     }
 
     /**
+     *  Helper method checking if current AI Client has permissions for a given operation.
+     */
+    private function checkAllowedOperationsByClient(string $itemName, int $imageAiEngine): bool
+    {
+        $stabilityAiClient = GeneralUtility::makeInstance(StabilityAiClient::class);
+        $openAiClient = GeneralUtility::makeInstance(OpenAiClient::class);
+
+        foreach ([$stabilityAiClient, $openAiClient] as $aiClient) {
+            if (get_class($aiClient) === AiImageController::GENERATOR_ENGINE[$imageAiEngine] && in_array(strtolower(str_replace('file', '', $itemName)), $aiClient->getAllowedOperations())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * This method is called for each item this provider adds and checks if given item can be added.
      */
     protected function canRender(string $itemName, string $type): bool
@@ -221,16 +242,18 @@ class ContentAiItemProvider extends AbstractProvider
         if ('item' !== $type) {
             return false;
         }
+        $imageAiEngine = SettingsController::getImageAiEngine();
         $canRender = false;
-        switch ($itemName) {
-            case 'fileUpscale':
-            case 'fileExtend':
-            case 'fileAlt':
-                $canRender = $this->isImage();
-                break;
-            case 'folderAltTexts':
-                $canRender = $this->isFolder();
-                break;
+
+        if (
+            (('fileUpscale' === $itemName || 'fileExtend' === $itemName) && true === $this->checkAllowedOperationsByClient($itemName, $imageAiEngine))
+            || 'fileAlt' === $itemName
+        ) {
+            return $this->isImage();
+        }
+
+        if ('folderAltTexts' === $itemName) {
+            return $this->isFolder();
         }
 
         return $canRender;
