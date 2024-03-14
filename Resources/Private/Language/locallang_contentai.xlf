@@ -103,7 +103,7 @@
             	<source>Decline</source>
             </trans-unit>
 			<trans-unit id="labelSummaryAltTextsAction" resname="labelSummaryAltTextsAction">
-            	<source>There are %s images in the folder %s, %s generated alt texts in this session, %s had already alt texts.</source>
+            	<source>There are %s images in the folder %s, %s generated alt texts in this session, %s had already alt texts. %s didn't had alt text but alt text generation failed.</source>
             </trans-unit>
 			<trans-unit id="labelChooseApi" resname="labelChooseApi">
             	<source>Choose image generation API:</source>

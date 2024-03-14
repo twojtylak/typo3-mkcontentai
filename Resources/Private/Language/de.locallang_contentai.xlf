@@ -111,7 +111,7 @@
             </trans-unit>
             <trans-unit id="labelAltTextForImage" resname="labelAltTextForImage">
                  <source>Alt text for image is</source>
-                 <target>Der Alt-Text für das Bild lautet</target>
+                 <target>Der Alt Text für das Bild lautet</target>
             </trans-unit>
             <trans-unit id="labelInOrder" resname="labelInOrder">
                  <source>, in order to change language - go to</source>
@@ -134,8 +134,8 @@
             	<target>Rückgang</target>
             </trans-unit>
 			<trans-unit id="labelSummaryAltTextsAction" resname="labelSummaryAltTextsAction">
-            	<source>There are %s images in the folder %s, %s generated alt texts in this session, %s had already alt texts.</source>
-            	<target>Es gibt %s Bilder im Ordner, %s erzeugte Alt-Texte in dieser Sitzung, %s hatte bereits Alt-Texte.</target>
+            	<source>There are %s images in the folder %s, %s generated alt texts in this session, %s had already alt texts. %s didn't had alt text but alt text generation failed.</source>
+            	<target>Es gibt %s Bilder im Ordner, %s erzeugte Alt Texte in dieser Sitzung, %s hatte bereits Alt Texte. %s atte keinen Alt Text, aber die Erzeugung des Alt Textes schlug fehl.</target>
             </trans-unit>
             <trans-unit id="labelChooseApi" resname="labelChooseApi">
                  <source>Choose image generation API:</source>
@@ -203,11 +203,11 @@
             </trans-unit>
 			<trans-unit id="labelContextMenuAlttext" resname="labelContextMenuAlttext">
             	<source>Alt text generate</source>
-            	<target>Alt-Text generieren</target>
+            	<target>Alt Text generieren</target>
             </trans-unit>
 			<trans-unit id="labelGeneratedTexts" resname="labelGeneratedTexts">
             	<source>Alt Text has been updated for Image: </source>
-            	<target>Der Alt-Text wurde für das Bild aktualisiert: </target>
+            	<target>Der Alt Text wurde für das Bild aktualisiert: </target>
             </trans-unit>
 			<trans-unit id="labelSettingsPageCurrentGroup" resname="labelSettingsPageCurrentGroup">
             	<source>Enable settings page for current group</source>

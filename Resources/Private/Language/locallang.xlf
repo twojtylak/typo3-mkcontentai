@@ -120,11 +120,14 @@
 			<trans-unit id="labelAiGenerateText2" resname="labelAiGenerateText2">
             	<source>Generate alt text by AI</source>
             </trans-unit>
+			<trans-unit id="labelErrorImageSize" resname="labelErrorImageSize">
+            	<source>Error, please check image size (less than 10MB) and minimum dimension is 50 x 50. Supported formats: JPEG, PNG, GIF, WEBP, BMP</source>
+            </trans-unit>
 			<trans-unit id="labelAlttextsGenerated" resname="labelAlttextsGenerated">
             	<source>Alt text has been generated successfully</source>
             </trans-unit>
 			<trans-unit id="labelInfoAlttextAlreadyDefined" resname="labelInfoAlttextAlreadyDefined">
-            	<source>All Images in given folder have already Alt Text defined</source>
+            	<source>All Images matching with requirements in given folder have already Alt Text defined</source>
             </trans-unit>
 			<trans-unit id="labelFileParameterError" resname="labelFileParameterError">
             	<source>File parameter could not be found!</source>
