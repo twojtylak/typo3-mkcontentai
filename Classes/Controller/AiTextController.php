@@ -67,9 +67,7 @@ class AiTextController extends BaseController
     public function altTextsAction(string $folderName): ResponseInterface
     {
         $files = $this->getAltTextForFiles($folderName);
-        $countGeneratedAltTexts = count($files);
-        $listOfFilesInFolder = count($this->aiAltTextService->getListOfFiles($folderName));
-        $existGeneratedAltTexts = $listOfFilesInFolder - $countGeneratedAltTexts;
+
         if (null == $files) {
             $translatedMessage = LocalizationUtility::translate('labelInfoAlttextAlreadyDefined', 'mkcontentai') ?? '';
             $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
@@ -85,9 +83,10 @@ class AiTextController extends BaseController
                 'files' => $files,
                 'folderName' => $folderName,
                 'languageName' => $this->siteLanguageService->getFullLanguageName(),
-                'countGeneratedAltTexts' => $countGeneratedAltTexts,
-                'listOfFilesInFolder' => $listOfFilesInFolder,
-                'existGeneratedAltTexts' => $existGeneratedAltTexts,
+                'countGeneratedAltTexts' => $this->aiAltTextService->getGeneratedAltTexts(),
+                'listOfFilesInFolder' => count($this->aiAltTextService->getListOfFiles($folderName)) - $this->aiAltTextService->getFileIsNotImage(),
+                'existGeneratedAltTexts' => $this->aiAltTextService->getHasAltText(),
+                'imagesWithSkippedAltText' => $this->aiAltTextService->getFailedProcessedImages(),
             ]
         );
 
@@ -137,7 +136,9 @@ class AiTextController extends BaseController
         try {
             $altTextFromFile = $this->aiAltTextService->getAltText($file);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            (413 === $e->getCode())
+            ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', AbstractMessage::ERROR)
+            : $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
         }
 
         return $altTextFromFile;

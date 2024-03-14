@@ -142,13 +142,17 @@
             	<source>Generate alt text by AI</source>
                 <target>Alt-Text durch AI generieren</target>
             </trans-unit>
+			<trans-unit id="labelErrorImageSize" resname="labelErrorImageSize">
+            	<source>Error, please check image size (less than 10MB) and minimum dimension is 50 x 50. Supported formats: JPEG, PNG, GIF, WEBP, BMP</source>
+            	<target>Fehler, bitte überprüfen Sie die Bildgröße (weniger als 10 MB) und die Mindestgröße ist 50 x 50. Unterstützte Formate: JPEG, PNG, GIF, WEBP, BMP</target>
+            </trans-unit>
 			<trans-unit id="labelAlttextsGenerated" resname="labelAlttextsGenerated">
             	<source>Alt text has been generated successfully</source>
             	<target>Alt-Text wurde erfolgreich generiert</target>
             </trans-unit>
 			<trans-unit id="labelInfoAlttextAlreadyDefined" resname="labelInfoAlttextAlreadyDefined">
-            	<source>All Images in given folder have already Alt Text defined</source>
-            	<target>Alle Bilder im angegebenen Ordner haben bereits einen Alt-Text definiert</target>
+            	<source>All Images matching with requirements in given folder have already Alt Text defined</source>
+            	<target>Alle Bilder, die den Anforderungen im angegebenen Ordner entsprechen, haben bereits einen Alt Text definiert.</target>
             </trans-unit>
 			<trans-unit id="labelFileParameterError" resname="labelFileParameterError">
             	<source>File parameter could not be found!</source>
