@@ -47,7 +47,7 @@ class FileService
     {
         $storage = $this->getStorage();
 
-        if (!$this->directoryExists()) {
+        if (!$storage->hasFolder($this->path)) {
             $storage->createFolder($this->path);
         }
 
@@ -79,17 +79,6 @@ class FileService
         }
     }
 
-    public function directoryExists(): bool
-    {
-        try {
-            $this->getFolder();
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * @return \TYPO3\CMS\Core\Resource\File[]
      */
@@ -97,11 +86,11 @@ class FileService
     {
         $storage = $this->getStorage();
 
-        if (!$this->directoryExists()) {
+        if (!$storage->hasFolder($this->path)) {
             $storage->createFolder($this->path);
         }
 
-        return $storage->getFilesInFolder($this->getFolder());
+        return $storage->getFilesInFolder($storage->getFolder($this->path));
     }
 
     /**
@@ -109,7 +98,7 @@ class FileService
      */
     public function getFilesFromExistingFolder(?string $folder): array
     {
-        $storage = $this->getStorage();
+        $storage = $this->getStorage($folder);
 
         if (null === $folder) {
             $folder = $storage->createFolder($this->path);
@@ -189,10 +178,13 @@ class FileService
         return $file;
     }
 
-    private function getStorage(): ResourceStorage
+    private function getStorage(?string $storageIdentifier = null): ResourceStorage
     {
-        $storage = $this->storageRepository->getDefaultStorage();
-        if (is_null($storage)) {
+        $storage = (null === $storageIdentifier) ?
+            $this->storageRepository->getDefaultStorage() :
+            $this->storageRepository->findByCombinedIdentifier($storageIdentifier);
+
+        if (null === $storage) {
             $translatedMessage = LocalizationUtility::translate('labelErrorStorage', 'mkcontentai') ?? '';
 
             throw new \Exception($translatedMessage);
@@ -204,8 +196,10 @@ class FileService
     /**
      * @return Folder|\TYPO3\CMS\Core\Resource\InaccessibleFolder
      */
-    private function getFolder(): Folder
+    private function getFolder(?string $storageIdentifier = null): Folder
     {
-        return $this->getStorage()->getFolder($this->path);
+        $storage = $this->getStorage($storageIdentifier);
+
+        return $storage->getFolder($this->path);
     }
 }
