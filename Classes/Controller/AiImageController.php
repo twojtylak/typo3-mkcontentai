@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Domain\Model\File;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * This file is part of the "DMK Content AI" Extension for TYPO3 CMS.
+ * This file is part of the "MK Content AI" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
