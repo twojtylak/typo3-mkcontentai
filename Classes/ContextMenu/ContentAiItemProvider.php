@@ -35,6 +35,7 @@ use DMK\MkContentAi\Http\Client\StabilityAiClient;
 use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -76,6 +77,13 @@ class ContentAiItemProvider extends AbstractProvider
         ],
     ];
 
+    public function setContext(string $table, string $identifier, string $context = ''): void
+    {
+        $this->table = $table;
+        $this->identifier = $identifier;
+        $this->context = $context;
+    }
+
     public function canHandle(): bool
     {
         return 'sys_file' === $this->table;
@@ -86,6 +94,65 @@ class ContentAiItemProvider extends AbstractProvider
         return 55;
     }
 
+    public function generateUrl(string $itemName): UriInterface
+    {
+        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
+        $majorVersion = $typo3Version->getMajorVersion();
+        $parameters = (11 === $majorVersion) ? $this->getParametersForVersion11($itemName) : $this->getParametersForVersion12($itemName);
+        $pathInfo = $this->getPathInfo($itemName, $majorVersion);
+
+        $this->updateParametersForItemName($parameters, $itemName, $majorVersion);
+
+        /**
+         * @var UriBuilder $uriBuilder
+         */
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+        $extendedUrl = $uriBuilder->buildUriFromRoutePath(
+            $pathInfo,
+            $parameters
+        );
+
+        return $extendedUrl;
+    }
+
+    /**
+     * This method is called for each item this provider adds and checks if given item can be added.
+     */
+    public function canRender(string $itemName, string $type): bool
+    {
+        if ('item' !== $type) {
+            return false;
+        }
+        $imageAiEngine = SettingsController::getImageAiEngine();
+        $canRender = false;
+
+        if (
+            (('fileUpscale' === $itemName || 'fileExtend' === $itemName) && true === $this->checkAllowedOperationsByClient($itemName, $imageAiEngine))
+            || 'fileAlt' === $itemName
+        ) {
+            return $this->isImage();
+        }
+
+        if ('folderAltTexts' === $itemName) {
+            return $this->isFolder();
+        }
+
+        return $canRender;
+    }
+
+    /**
+     * @return array<string, array{
+     *     type: string,
+     *     label: string,
+     *     iconIdentifier: string,
+     *     callbackAction: string
+     * }>
+     */
+    public function getItemsConfiguration(): array
+    {
+        return $this->itemsConfiguration;
+    }
+
     /**
      * @return array<string>
      *
@@ -93,7 +160,7 @@ class ContentAiItemProvider extends AbstractProvider
      */
     protected function getAdditionalAttributes(string $itemName): array
     {
-        $typo3Version = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
+        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
 
         $extendUrl = $this->generateUrl($itemName);
 
@@ -113,29 +180,23 @@ class ContentAiItemProvider extends AbstractProvider
         }
     }
 
-    private function generateUrl(string $itemName): UriInterface
+    /**
+     * Helper method implementing e.g. access check for certain item.
+     */
+    protected function isImage(): bool
     {
-        $typo3Version = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
-        $majorVersion = $typo3Version->getMajorVersion();
-        if (11 === $majorVersion) {
-            $parameters = $this->getParametersForVersion11($itemName);
-        } elseif (12 === $majorVersion) {
-            $parameters = $this->getParametersForVersion12($itemName);
-        }
-        $pathInfo = $this->getPathInfo($itemName, $majorVersion);
+        return 'sys_file' === $this->table && preg_match('/\.(png|jpg)$/', $this->identifier);
+    }
 
-        $this->updateParametersForItemName($parameters, $itemName, $majorVersion);
+    /**
+     * Helper method checking if resource is a folder and exist in the storage.
+     */
+    protected function isFolder(): bool
+    {
+        $resourceStorage = GeneralUtility::makeInstance(ResourceFactory::class);
+        $object = $resourceStorage->retrieveFileOrFolderObject($this->identifier);
 
-        /**
-         * @var UriBuilder $uriBuilder
-         */
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $extendUrl = $uriBuilder->buildUriFromRoutePath(
-            $pathInfo,
-            $parameters
-        );
-
-        return $extendUrl;
+        return $object instanceof Folder;
     }
 
     /**
@@ -232,49 +293,5 @@ class ContentAiItemProvider extends AbstractProvider
         }
 
         return false;
-    }
-
-    /**
-     * This method is called for each item this provider adds and checks if given item can be added.
-     */
-    protected function canRender(string $itemName, string $type): bool
-    {
-        if ('item' !== $type) {
-            return false;
-        }
-        $imageAiEngine = SettingsController::getImageAiEngine();
-        $canRender = false;
-
-        if (
-            (('fileUpscale' === $itemName || 'fileExtend' === $itemName) && true === $this->checkAllowedOperationsByClient($itemName, $imageAiEngine))
-            || 'fileAlt' === $itemName
-        ) {
-            return $this->isImage();
-        }
-
-        if ('folderAltTexts' === $itemName) {
-            return $this->isFolder();
-        }
-
-        return $canRender;
-    }
-
-    /**
-     * Helper method implementing e.g. access check for certain item.
-     */
-    protected function isImage(): bool
-    {
-        return 'sys_file' === $this->table && preg_match('/\.(png|jpg)$/', $this->identifier);
-    }
-
-    /**
-     * Helper method checking if resource is a folder and exist in the storage.
-     */
-    protected function isFolder(): bool
-    {
-        $resourceStorage = GeneralUtility::makeInstance(ResourceFactory::class);
-        $object = $resourceStorage->retrieveFileOrFolderObject($this->identifier);
-
-        return $object instanceof Folder;
     }
 }

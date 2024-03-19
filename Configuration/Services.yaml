@@ -20,6 +20,13 @@ services:
               method: handleEvent
               event: TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent
 
+    DMK\MkContentAi\Backend\EventListener\FileListActionsEventListener:
+        public: true
+        tags:
+            - name: event.listener
+              method: handleEvent
+              event: TYPO3\CMS\Filelist\Event\ProcessFileListActionsEvent
+
     DMK\MkContentAi\Command\AltTextGenerateCommand:
         tags:
             -
