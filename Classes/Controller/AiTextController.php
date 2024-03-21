@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\File;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -53,10 +54,18 @@ class AiTextController extends BaseController
 
     public function altTextAction(File $file): ResponseInterface
     {
+        $altText = $this->getAltTextForFile($file);
+
+        if (null === $altText || '' === $altText) {
+            $response = new ForwardResponse('filelist');
+
+            return $response->withControllerName('AiImage');
+        }
+
         $this->view->assignMultiple(
             [
                 'file' => $file,
-                'altText' => $this->getAltTextForFile($file),
+                'altText' => $altText,
                 'languageName' => $this->siteLanguageService->getFullLanguageName(),
             ]
         );
@@ -129,7 +138,7 @@ class AiTextController extends BaseController
         return $redirectResponse;
     }
 
-    private function getAltTextForFile(File $file): string
+    private function getAltTextForFile(File $file): ?string
     {
         $altTextFromFile = '';
 
@@ -139,6 +148,8 @@ class AiTextController extends BaseController
             (413 === $e->getCode())
             ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', AbstractMessage::ERROR)
             : $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+
+            return null;
         }
 
         return $altTextFromFile;
