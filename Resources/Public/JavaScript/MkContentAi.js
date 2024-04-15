@@ -36,7 +36,7 @@ define(['jquery', 'cropper'], function ($, Cropper) {
             ready: function () {
                 let naturalWidth = this.cropper.getImageData().naturalWidth;
                 let naturalHeight = this.cropper.getImageData().naturalHeight;
-
+                if (naturalHeight >= 256 && naturalWidth >= 256) {
                 this.cropper.setCanvasData({
                     left: 0,
                     top: 0,
@@ -44,17 +44,21 @@ define(['jquery', 'cropper'], function ($, Cropper) {
                     height: naturalHeight
                 });
             }
+            }
         });
 
         $('#extend').on('submit', function(event) {
             event.preventDefault();
-
-            let canvas = cropper.getCroppedCanvas();
+            let minWidthAndHeight = document.querySelector('input[name="size"]:checked').getAttribute('data-width') ?? 256;
+            minWidthAndHeight = parseInt(minWidthAndHeight, 10);
+            let canvas = cropper.getCroppedCanvas({
+                    minWidth: minWidthAndHeight,
+                    minHeight: minWidthAndHeight
+                }
+            );
             let croppedImageSrc = canvas.toDataURL('image/png');
-
             document.getElementById('croppedImage').src = croppedImageSrc;
             document.getElementById('CroppedBase64').value = croppedImageSrc;
-
             this.submit();
         });
 
