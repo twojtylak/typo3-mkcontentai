@@ -217,6 +217,10 @@
             	<source>MKContentAI permissions</source>
             	<target>MKContentAI Berechtigungen</target>
             </trans-unit>
+			<trans-unit id="labelSettingsImageGenerationPrompt" resname="labelSettingsImageGenerationPrompt">
+            	<source>Enable image generation prompt in tt_content:media field</source>
+            	<target>Aufforderung zur Bilderzeugung im Feld tt_content:media aktivieren</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

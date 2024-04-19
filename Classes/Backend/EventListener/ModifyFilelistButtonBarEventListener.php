@@ -15,6 +15,7 @@
 
 namespace DMK\MkContentAi\Backend\EventListener;
 
+use DMK\MkContentAi\Utility\PermissionsUtility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
@@ -31,13 +32,20 @@ class ModifyFilelistButtonBarEventListener
      */
     protected $iconFactory;
 
-    public function __construct()
+    private PermissionsUtility $permissionsUtility;
+
+    public function __construct(PermissionsUtility $permissionsUtility)
     {
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $this->permissionsUtility = $permissionsUtility;
     }
 
     public function handleEvent(ModifyButtonBarEvent $event): void
     {
+        if (!$this->permissionsUtility->userHasAccessToImageGenerationPromptButton()) {
+            return;
+        }
+
         $translatedMessage = LocalizationUtility::translate('labelAiGenerateText', 'mkcontentai') ?? '';
         $url = $this->buildUriToControllerAction();
         $buttons = $event->getButtons();
