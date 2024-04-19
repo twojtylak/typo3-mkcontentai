@@ -35,6 +35,18 @@ services:
                 description: 'Generate alt texts in specific directory - example: "1:/mkcontentai/openai"'
                 schedulable: true
 
+    DMK\MkContentAi\Utility\PermissionsUtility:
+        calls:
+            - method: 'injectContext'
+              arguments:
+                  $context: '@TYPO3\CMS\Core\Context\Context'
+        public: true
+
+    DMK\MkContentAi\Backend\Hooks\ButtonBarHook:
+        arguments:
+            $permissionsUtility: '@DMK\MkContentAi\Utility\PermissionsUtility'
+        public: true
+
     DMK\MkContentAi\Service\SiteLanguageService:
         public: true
 

@@ -15,9 +15,13 @@
 
 namespace DMK\MkContentAi\Controller;
 
+use DMK\MkContentAi\Http\Client\ImageApiInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class BaseController extends ActionController
 {
@@ -30,7 +34,7 @@ class BaseController extends ActionController
 
     public function initializeAction(): void
     {
-        $pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/MkContentAi');
         $pageRenderer->addRequireJsConfiguration(
             [
@@ -42,5 +46,31 @@ class BaseController extends ActionController
                 ],
             ]
         );
+    }
+
+    /**
+     * @return array{client?:ImageApiInterface, clientClass?:string, error?:string}
+     */
+    protected function initializeClient(): array
+    {
+        try {
+            $imageEngineKey = SettingsController::getImageAiEngine();
+            $client = GeneralUtility::makeInstance(AiImageController::GENERATOR_ENGINE[$imageEngineKey]);
+            if (is_a($client, ImageApiInterface::class)) {
+                return [
+                    'client' => $client,
+                    'clientClass' => get_class($client),
+                ];
+            }
+            $errorTranslated = LocalizationUtility::translate('labelError', 'mkcontentai') ?? '';
+
+            return [
+                'error' => $errorTranslated,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 }
