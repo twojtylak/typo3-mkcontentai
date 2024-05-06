@@ -221,6 +221,10 @@
             	<source>Enable image generation prompt in tt_content:media field</source>
             	<target>Aufforderung zur Bilderzeugung im Feld tt_content:media aktivieren</target>
             </trans-unit>
+			<trans-unit id="labelTextExtendImage" resname="labelTextExtendImage">
+            	<source>Add a new content into existing image</source>
+            	<target>Einen neuen Inhalt in ein bestehendes Bild einfügen</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

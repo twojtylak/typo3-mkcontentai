@@ -21,15 +21,31 @@ define(['jquery', 'cropper'], function ($, Cropper) {
         });
 
         const image = document.getElementById('image');
+        const client = document.getElementById("clientApi").value;
+        let customHeight = 256;
+        let customWidth = 256;
+        let dragModeValue = 'none';
+        let viewModeValue = 1;
+        let cropBoxResizable = false;
+        let aspectRatio = 1 / 1;
+
+        if (client === "StabilityAiClient") {
+            customHeight = image.height;
+            customWidth = image.width;
+            dragModeValue = 'crop';
+            viewModeValue = 1;
+            cropBoxResizable = true;
+            aspectRatio = NaN;
+        }
         const cropper = new Cropper(image, {
-            aspectRatio: 1 / 1,
-            cropBoxResizable: false,
-            dragMode: 'none',
+            aspectRatio: aspectRatio,
+            cropBoxResizable: cropBoxResizable,
+            dragMode: dragModeValue,
             zoomable: false,
-            viewMode: 1,
+            viewMode: viewModeValue,
             data: {
-                width: 256,
-                height: 256
+                width: customWidth,
+                height: customHeight
             },
             crop(event) {
             },
@@ -49,7 +65,14 @@ define(['jquery', 'cropper'], function ($, Cropper) {
 
         $('#extend').on('submit', function(event) {
             event.preventDefault();
-            let minWidthAndHeight = document.querySelector('input[name="size"]:checked').getAttribute('data-width') ?? 256;
+            const client = document.getElementById("clientApi").value;
+            let minWidthAndHeight;
+
+            if (client === "StabilityAiClient") {
+                minWidthAndHeight = image.height;
+            } else {
+                minWidthAndHeight = document.querySelector('input[name="size"]:checked').getAttribute('data-width') ?? 256;
+            }
             minWidthAndHeight = parseInt(minWidthAndHeight, 10);
             let canvas = cropper.getCroppedCanvas({
                     minWidth: minWidthAndHeight,

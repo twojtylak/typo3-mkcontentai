@@ -16,6 +16,7 @@
 namespace DMK\MkContentAi\Http\Client;
 
 use DMK\MkContentAi\Domain\Model\Image;
+use DMK\MkContentAi\Http\Client\Action\StableDiffusionAction;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -25,18 +26,21 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class StableDiffusionClient extends BaseClient implements ImageApiInterface
 {
-    private const API_LINK = 'https://stablediffusionapi.com/api/v3/';
-
-    private const DREAMBOOTH_API_LINK = 'https://stablediffusionapi.com/api/v4/dreambooth/';
+    private StableDiffusionAction $stableDiffusionAction;
 
     public function __construct()
     {
         $this->getApiKey();
     }
 
+    public function injectStableDiffusionAction(StableDiffusionAction $stableDiffusionAction): void
+    {
+        $this->stableDiffusionAction = $stableDiffusionAction;
+    }
+
     public function validateApiCall(): \stdClass
     {
-        $response = $this->request('system_load');
+        $response = $this->request($this->stableDiffusionAction->getActions()['system_load']);
 
         $response = $this->validateResponse($response->getContent());
 
@@ -119,7 +123,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
      */
     private function request(string $endpoint, array $queryParams = [], string $apiLinkAdjust = ''): ResponseInterface
     {
-        $apiLink = self::getApiLink();
+        $apiLink = $this->stableDiffusionAction::API_LINK;
         if ('' != $apiLinkAdjust) {
             $apiLink = $apiLinkAdjust;
         }
@@ -176,7 +180,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
             'track_id' => null,
         ];
 
-        $response = $this->request('img2img', $params);
+        $response = $this->request($this->stableDiffusionAction->getActions()['img2img'], $params);
 
         $response = $this->validateResponse($response->getContent());
 
@@ -205,7 +209,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
             'scheduler' => 'UniPCMultistepScheduler',
         ];
 
-        $response = $this->request('img2img', $params, self::DREAMBOOTH_API_LINK);
+        $response = $this->request($this->stableDiffusionAction->getActions()['img2img'], $params, $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
         $response = $this->validateResponse($response->getContent());
 
@@ -233,7 +237,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
     /**
      * @return array<Image>
      */
-    public function extend(string $sourceImage, string $text = 'Add car'): array
+    public function extend(string $sourceImage, string $text = '', ?string $promptText = ''): array
     {
         $translatedMessage = LocalizationUtility::translate('labelErrorNotImplemented', 'mkcontentai') ?? '';
 
@@ -257,7 +261,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
             'track_id' => null,
             'model_id' => $this->getCurrentModel(),
         ];
-        $response = $this->request('', $params, self::DREAMBOOTH_API_LINK);
+        $response = $this->request('', $params, $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
         $response = $this->validateResponse($response->getContent());
 
@@ -282,7 +286,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
             'webhook' => null,
             'track_id' => null,
         ];
-        $response = $this->request('text2img', $params);
+        $response = $this->request($this->stableDiffusionAction->getActions()['text2img'], $params);
 
         $response = $this->validateResponse($response->getContent());
 
@@ -314,7 +318,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
      */
     public function modelList(): array
     {
-        $response = $this->request('model_list', [], 'https://stablediffusionapi.com/api/v4/dreambooth/');
+        $response = $this->request($this->stableDiffusionAction->getActions()['model_list'], [], $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
         $response = $this->validateResponse($response->getContent());
 
@@ -323,11 +327,6 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
         }
 
         return [];
-    }
-
-    public function getApiLink(): string
-    {
-        return self::API_LINK;
     }
 
     public function setCurrentModel(string $modelName): void

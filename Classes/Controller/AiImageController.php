@@ -201,8 +201,12 @@ class AiImageController extends BaseController
     /**
      * @return ResponseInterface
      */
-    public function extendAction(string $direction, ?File $file = null, string $base64 = '')
+    public function extendAction(string $direction, ?File $file = null, string $base64 = '', ?string $promptText = '')
     {
+        if (!isset($promptText) || '' === $promptText) {
+            $promptText = 'extend image content';
+        }
+
         try {
             $filePath = '';
             if ($base64) {
@@ -217,7 +221,7 @@ class AiImageController extends BaseController
 
                 throw new \Exception($translatedMessage, 1623345720);
             }
-            $images = $this->client->extend($filePath, $direction);
+            $images = $this->client->extend($filePath, $direction, $promptText);
         } catch (\Exception $e) {
             $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
             $this->redirect('filelist');
@@ -227,17 +231,24 @@ class AiImageController extends BaseController
             [
                 'images' => $images,
                 'originalFile' => $file,
+                'promptText' => $promptText,
             ]
         );
 
         return $this->handleResponse();
     }
 
-    public function cropAndExtendAction(File $file): ResponseInterface
+    public function cropAndExtendAction(File $file, ?string $promptText = ''): ResponseInterface
     {
+        if (!isset($promptText) || '' === $promptText) {
+            $promptText = 'extending content image';
+        }
+
         $this->view->assignMultiple(
             [
                 'file' => $file,
+                'promptText' => $promptText,
+                'clientApi' => substr(get_class($this->client), 28),
             ]
         );
 
