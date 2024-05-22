@@ -48,12 +48,15 @@ class AjaxController extends BaseController
      */
     public function blobImage(ServerRequestInterface $request): ResponseInterface
     {
-        if (!isset($request->getParsedBody()['imageUrl'])) {
+        /** @var array<mixed> $parsedBody */
+        $parsedBody = $request->getParsedBody();
+        $imageUrl = $parsedBody['imageUrl'] ?? null;
+
+        if (!$imageUrl) {
             $translatedMessage = LocalizationUtility::translate('labelErrorMissingImageUrl', 'mkcontentai') ?? '';
 
             throw new \Exception($translatedMessage);
         }
-        $imageUrl = $request->getParsedBody()['imageUrl'];
 
         $imageData = GeneralUtility::getUrl($imageUrl);
         if (!is_string($imageData)) {
@@ -170,7 +173,11 @@ class AjaxController extends BaseController
         }
         $client = $clientResponse['client'];
 
-        if (empty($request->getParsedBody()['promptText'])) {
+        /** @var array<mixed> $parsedBody */
+        $parsedBody = $request->getParsedBody();
+        $text = $parsedBody['promptText'] ?? null;
+
+        if (empty($text)) {
             $translatedMessage = LocalizationUtility::translate('labelErrorPromptText', 'mkcontentai') ?? '';
 
             return new JsonResponse(
@@ -179,7 +186,6 @@ class AjaxController extends BaseController
                 ],
                 500);
         }
-        $text = $request->getParsedBody()['promptText'];
 
         try {
             $images = $client->image($text);

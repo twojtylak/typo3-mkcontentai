@@ -135,6 +135,9 @@
 			<trans-unit id="labelErrorSettingsPermissions" resname="labelErrorSettingsPermissions">
             	<source>You don't have permissions to go Settings Page!</source>
             </trans-unit>
+            <trans-unit id="mlang_label_image_to_video_generated" resname="mlang_label_image_to_video_generated">
+                 <source>Video has been generated</source>
+            </trans-unit>
 			<trans-unit id="labelErrorAiImagePromptPermissions" resname="labelErrorAiImagePromptPermissions">
             	<source>You don't have permissions to go Image generation Page!</source>
             </trans-unit>

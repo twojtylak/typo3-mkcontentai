@@ -53,6 +53,10 @@
                  <source>Crop and extend</source>
                  <target>Beschneiden und erweitern</target>
             </trans-unit>
+			<trans-unit id="labelCropAndGenerateVideo" resname="labelCropAndGenerateVideo">
+            	<source>Crop image and generate video</source>
+            	<target>Bild zuschneiden und Video erzeugen</target>
+            </trans-unit>
             <trans-unit id="labelSizeAndCrop" resname="labelSizeAndCrop">
                  <source>Size of crop area</source>
                  <target>Größe des zu beschneidenden Bereich</target>
@@ -76,6 +80,10 @@
             <trans-unit id="labelVariantsGenerating" resname="labelVariantsGenerating">
                  <source>Variants generating</source>
                  <target>Varianten erzeugen</target>
+            </trans-unit>
+			<trans-unit id="labelImageToVideoGenerating" resname="labelImageToVideoGenerating">
+            	<source>Image to Video</source>
+            	<target>Bild zu Video</target>
             </trans-unit>
             <trans-unit id="mlang_label_variants_generated" resname="mlang_label_variants_generated">
                  <source>Variants generated</source>
@@ -201,6 +209,10 @@
             	<source>Extend</source>
             	<target>Erweitern</target>
             </trans-unit>
+			<trans-unit id="labelContextMenuImageToVideo" resname="labelContextMenuImageToVideo">
+            	<source>Image to Video</source>
+            	<target>Bild zu Video</target>
+            </trans-unit>
 			<trans-unit id="labelContextMenuAlttext" resname="labelContextMenuAlttext">
             	<source>Alt text generate</source>
             	<target>Alt Text generieren</target>
@@ -224,6 +236,14 @@
 			<trans-unit id="labelTextExtendImage" resname="labelTextExtendImage">
             	<source>Add a new content into existing image</source>
             	<target>Einen neuen Inhalt in ein bestehendes Bild einfügen</target>
+            </trans-unit>
+			<trans-unit id="labelGeneratedVideo" resname="labelGeneratedVideo">
+            	<source>Generated video</source>
+            	<target>Erstelltes video</target>
+            </trans-unit>
+			<trans-unit id="labelSaveVideo" resname="labelSaveVideo">
+            	<source>Save video</source>
+            	<target>Video speichern</target>
             </trans-unit>
 		</body>
 	</file>

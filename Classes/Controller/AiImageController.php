@@ -57,37 +57,7 @@ class AiImageController extends BaseController
 
     public function initializeAction(): void
     {
-        $client = $this->initializeClient();
-        if (isset($client['error'])) {
-            $this->addFlashMessage(
-                $client['error'],
-                '',
-                AbstractMessage::ERROR
-            );
-
-            return;
-        }
-        if (isset($client['client'])) {
-            $this->client = $client['client'];
-        }
-
-        $arguments['actionName'] = $this->request->getControllerActionName();
-        if (!in_array($arguments['actionName'], $this->client->getAllowedOperations())) {
-            $translatedMessage = LocalizationUtility::translate('labelNotAllowed', 'mkcontentai', $arguments) ?? '';
-            $this->addFlashMessage($translatedMessage.' '.get_class($this->client), '', AbstractMessage::ERROR);
-            $this->redirect('filelist');
-        }
-
-        $infoMessage = LocalizationUtility::translate('labelEngineInitialized', 'mkcontentai') ?? '';
-        if (isset($client['clientClass'])) {
-            $infoMessage .= ' '.$client['clientClass'];
-        }
-        $this->addFlashMessage(
-            $infoMessage,
-            '',
-            AbstractMessage::INFO
-        );
-        parent::initializeAction();
+        $this->initializeAndAuthorizeAction();
     }
 
     /**
@@ -106,20 +76,6 @@ class AiImageController extends BaseController
         );
 
         return $this->handleResponse();
-    }
-
-    protected function handleResponse(): ResponseInterface
-    {
-        if (null === $this->moduleTemplateFactory) {
-            $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
-
-            throw new \Exception($translatedMessage, 1623345720);
-        }
-
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $moduleTemplate->setContent($this->view->render());
-
-        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
     /**
@@ -190,7 +146,7 @@ class AiImageController extends BaseController
         }
 
         $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
-        $fileService->saveImageFromUrl($upscaledImage->getUrl(), 'upscaled image', $file->getOriginalResource()->getNameWithoutExtension().'_upscaled');
+        $fileService->saveFileFromUrl($upscaledImage->getUrl(), 'upscaled image', $file->getOriginalResource()->getNameWithoutExtension().'_upscaled');
         $translatedMessage = LocalizationUtility::translate('mlang_label_upscaled_image_saved', 'mkcontentai') ?? '';
 
         $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
@@ -213,7 +169,7 @@ class AiImageController extends BaseController
                 $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
                 $filePath = $fileService->saveTempBase64Image($base64);
             }
-            if ($file) {
+            if ($file && '' === $filePath) {
                 $filePath = $file->getOriginalResource()->getForLocalProcessing(false);
             }
             if ('' == $filePath) {
@@ -246,7 +202,12 @@ class AiImageController extends BaseController
 
         $this->view->assignMultiple(
             [
+                'options' => $this->client->getAvailableResolutions($this->request->getControllerActionName()),
                 'file' => $file,
+                'actionName' => 'extend',
+                'operationName' => 'extend',
+                'controllerName' => $this->request->getControllerName(),
+                'withExtend' => true,
                 'promptText' => $promptText,
                 'clientApi' => substr(get_class($this->client), 28),
             ]
@@ -259,11 +220,25 @@ class AiImageController extends BaseController
     {
         $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
         try {
-            $fileService->saveImageFromUrl($imageUrl, $description);
+            $fileService->saveFileFromUrl($imageUrl, $description);
         } catch (\Exception $e) {
             $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
         }
 
         return $this->redirect('filelist');
+    }
+
+    protected function handleResponse(): ResponseInterface
+    {
+        if (null === $this->moduleTemplateFactory) {
+            $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
+
+            throw new \Exception($translatedMessage, 1623345720);
+        }
+
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $moduleTemplate->setContent($this->view->render());
+
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 }
