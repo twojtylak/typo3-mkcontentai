@@ -39,6 +39,9 @@ Automatic generation of alternative text (alt text) for images by alttext.ai API
 ### Batch Command for Alt Text
 A batch command feature enables processing all images in a given folder either by a context menu in the filelist module or by a scheduler task. This functionality helps in bulk generation of alt texts for images, improving efficiency.
 
+### Image to video generation
+Image to video currently works only with StabilityAI. This functionality introduces the ability to create a video from provided image.
+
 ### Settings
 The "Settings" section allows you to configure the AI platforms and APIs that the extension should use, as well as additional options for Stable Diffusion. Specifically, in the "Settings" section, you can:
 
