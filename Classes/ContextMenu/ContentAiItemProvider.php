@@ -75,6 +75,12 @@ class ContentAiItemProvider extends AbstractProvider
             'iconIdentifier' => 'actions-rocket',
             'callbackAction' => 'altTexts',
         ],
+        'filePrepareImageToVideo' => [
+            'type' => 'item',
+            'label' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelContextMenuImageToVideo',
+            'iconIdentifier' => 'actions-rocket',
+            'callbackAction' => 'prepareImageToVideo',
+        ],
     ];
 
     public function setContext(string $table, string $identifier, string $context = ''): void
@@ -127,7 +133,7 @@ class ContentAiItemProvider extends AbstractProvider
         $canRender = false;
 
         if (
-            (('fileUpscale' === $itemName || 'fileExtend' === $itemName) && true === $this->checkAllowedOperationsByClient($itemName, $imageAiEngine))
+            (('fileUpscale' === $itemName || 'fileExtend' === $itemName || 'filePrepareImageToVideo' === $itemName) && true === $this->checkAllowedOperationsByClient($itemName, $imageAiEngine))
             || 'fileAlt' === $itemName
         ) {
             return $this->isImage();
@@ -209,6 +215,7 @@ class ContentAiItemProvider extends AbstractProvider
             'fileExtend' => 'cropAndExtend',
             'fileAlt' => 'altText',
             'folderAltTexts' => 'altTexts',
+            'filePrepareImageToVideo' => 'prepareImageToVideo',
         ];
 
         if (11 === $version) {
@@ -217,6 +224,10 @@ class ContentAiItemProvider extends AbstractProvider
 
         if (('fileAlt' === $itemName || 'folderAltTexts' === $itemName) && 11 === $version) {
             $parameters['tx_mkcontentai_system_mkcontentaicontentai']['controller'] = 'AiText';
+        }
+
+        if (('filePrepareImageToVideo' === $itemName) && 11 === $version) {
+            $parameters['tx_mkcontentai_system_mkcontentaicontentai']['controller'] = 'AiVideo';
         }
     }
 
@@ -273,6 +284,10 @@ class ContentAiItemProvider extends AbstractProvider
                 12 => '/module/mkcontentai/AiText/altTexts',
                 11 => '/module/system/MkcontentaiContentai',
             ],
+            'filePrepareImageToVideo' => [
+                12 => '/module/mkcontentai/AiVideo/prepareImageToVideo',
+                11 => '/module/system/MkcontentaiContentai',
+            ],
         ];
 
         return $pathInfoMapping[$itemName][$version] ?? '';
@@ -287,7 +302,7 @@ class ContentAiItemProvider extends AbstractProvider
         $openAiClient = GeneralUtility::makeInstance(OpenAiClient::class);
 
         foreach ([$stabilityAiClient, $openAiClient] as $aiClient) {
-            if (get_class($aiClient) === AiImageController::GENERATOR_ENGINE[$imageAiEngine] && in_array(strtolower(str_replace('file', '', $itemName)), $aiClient->getAllowedOperations())) {
+            if (get_class($aiClient) === AiImageController::GENERATOR_ENGINE[$imageAiEngine] && in_array(lcfirst(str_replace('file', '', $itemName)), $aiClient->getAllowedOperations())) {
                 return true;
             }
         }

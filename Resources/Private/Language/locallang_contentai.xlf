@@ -42,6 +42,9 @@
 			<trans-unit id="labelCropAndExtend" resname="labelCropAndExtend">
             	<source>Crop and extend</source>
             </trans-unit>
+			<trans-unit id="labelCropAndGenerateVideo" resname="labelCropAndGenerateVideo">
+            	<source>Crop image and generate video</source>
+            </trans-unit>
 			<trans-unit id="labelSizeAndCrop" resname="labelSizeAndCrop">
             	<source>Size of crop area</source>
             </trans-unit>
@@ -59,6 +62,9 @@
             </trans-unit>
 			<trans-unit id="labelVariantsGenerating" resname="labelVariantsGenerating">
             	<source>Variants generating</source>
+            </trans-unit>
+			<trans-unit id="labelImageToVideoGenerating" resname="labelImageToVideoGenerating">
+            	<source>Image to Video</source>
             </trans-unit>
 			<trans-unit id="labelOriginalFile" resname="labelOriginalFile">
             	<source>Original file</source>
@@ -153,6 +159,9 @@
 			<trans-unit id="labelContextMenuExtend" resname="labelContextMenuExtend">
             	<source>Extend</source>
             </trans-unit>
+			<trans-unit id="labelContextMenuImageToVideo" resname="labelContextMenuImageToVideo">
+            	<source>Image to Video</source>
+            </trans-unit>
 			<trans-unit id="labelContextMenuAlttext" resname="labelContextMenuAlttext">
             	<source>Alt text generate</source>
             </trans-unit>
@@ -170,6 +179,12 @@
             </trans-unit>
 			<trans-unit id="labelTextExtendImage" resname="labelTextExtendImage">
             	<source>Prompt</source>
+            </trans-unit>
+			<trans-unit id="labelGeneratedVideo" resname="labelGeneratedVideo">
+            	<source>Generated video</source>
+            </trans-unit>
+			<trans-unit id="labelSaveVideo" resname="labelSaveVideo">
+            	<source>Save video</source>
             </trans-unit>
 		</body>
 	</file>
