@@ -170,6 +170,14 @@
             	<source>You don't have permissions to go Image generation Page!</source>
             	<target>Sie haben keine Berechtigung, die Seite Bilderstellungen aufzurufen!</target>
             </trans-unit>
+			<trans-unit id="labelErrorInvalidApiKey" resname="labelErrorInvalidApiKey">
+            	<source>Invalid %s API key. Please, check your API key.</source>
+            	<target>Ungültiger %s API-Schlüssel. Bitte überprüfen Sie Ihren API-Schlüssel und geben Sie ihn erneut ein.</target>
+            </trans-unit>
+			<trans-unit id="labelErrorSavedLanguage" resname="labelErrorSavedLanguage">
+            	<source>Issue with saving the language, check your API key.</source>
+            	<target>Problem beim Speichern der Sprache, überprüfen Sie Ihren API-Schlüssel.</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

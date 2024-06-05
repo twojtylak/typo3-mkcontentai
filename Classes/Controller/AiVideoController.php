@@ -75,7 +75,7 @@ class AiVideoController extends BaseController
                 'clientApi' => substr(get_class($this->client), 28),
             ]
         );
-        $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
+        $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO, false);
 
         return $this->handleResponse();
     }

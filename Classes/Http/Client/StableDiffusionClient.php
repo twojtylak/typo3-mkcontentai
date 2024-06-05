@@ -92,7 +92,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
     {
         $message = $response->messege ?? $response->message ?? null;
         if (is_string($message ?? null)) {
-            throw new \Exception($message);
+            throw new \Exception($message.' - StableDiffusion API');
         }
         if (is_iterable($message ?? null)) {
             $errors = [];
@@ -318,6 +318,10 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
      */
     public function modelList(): array
     {
+        if (empty($this->getApiKey())) {
+            return [];
+        }
+
         $response = $this->request($this->stableDiffusionAction->getActions()['model_list'], [], $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
         $response = $this->validateResponse($response->getContent());
@@ -329,7 +333,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
         return [];
     }
 
-    public function setCurrentModel(string $modelName): void
+    public function setCurrentModel(?string $modelName = null): void
     {
         $registry = $this->getRegistry();
         $class = $this->getClass();

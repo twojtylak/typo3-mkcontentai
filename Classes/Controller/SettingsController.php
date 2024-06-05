@@ -53,7 +53,7 @@ class SettingsController extends BaseController
         if (false === $this->permissionsUtility->userHasAccessToSettings()) {
             $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
             $translatedMessage = LocalizationUtility::translate('labelErrorSettingsPermissions', 'mkcontentai') ?? '';
-            $this->addFlashMessage($translatedMessage, '', AbstractMessage::WARNING);
+            $this->addFlashMessage($translatedMessage, '', AbstractMessage::WARNING, false);
             $moduleTemplate->setContent($view->renderSection('InsufficientPermissions'));
 
             return $this->htmlResponse($moduleTemplate->renderContent());
@@ -119,7 +119,7 @@ class SettingsController extends BaseController
                 ]
             );
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
         }
         if (null === $this->moduleTemplateFactory) {
             $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
@@ -137,13 +137,16 @@ class SettingsController extends BaseController
     {
         if ($language) {
             $siteLanguageService->setLanguage($language);
-            $throwedTranslatedMessage = LocalizationUtility::translate('labelSavedLanguage', 'mkcontentai') ?? '';
+            $translatedMessage = LocalizationUtility::translate('labelSavedLanguage', 'mkcontentai') ?? '';
 
-            $this->addFlashMessage($throwedTranslatedMessage);
+            $this->addFlashMessage($translatedMessage);
             try {
                 $client->validateApiCall();
             } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+                (403 === $e->getCode()) ?
+                    $translatedMessage = LocalizationUtility::translate('labelErrorSavedLanguage', 'mkcontentai') ?? '' :
+                    $translatedMessage = $e->getMessage();
+                $this->addFlashMessage($translatedMessage, '', AbstractMessage::ERROR, false);
             }
         }
     }
@@ -152,12 +155,12 @@ class SettingsController extends BaseController
     {
         if ($key) {
             $client->setApiKey($key);
-            $throwedTranslatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
-            $this->addFlashMessage($throwedTranslatedMessage);
+            $translatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
+            $this->addFlashMessage($translatedMessage);
             try {
                 $client->validateApiCall();
             } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+                $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
             }
         }
     }
