@@ -15,29 +15,6 @@
 
 defined('TYPO3') or exit;
 
-(static function () {
-    TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Mkcontentai',
-        'system',
-        'contentai',
-        '',
-        [
-            DMK\MkContentAi\Controller\AiImageController::class => 'filelist, variants, prompt, promptResult, saveFile, upscale, extend, cropAndExtend, crop',
-            DMK\MkContentAi\Controller\SettingsController::class => 'settings',
-            DMK\MkContentAi\Controller\AiTextController::class => 'altText, altTextSave, altTexts, altTextsSave, filelist',
-            DMK\MkContentAi\Controller\AiVideoController::class => 'prepareImageToVideo, imageToVideo, filelist, saveFile',
-        ],
-        [
-            'access' => 'user,group',
-            'icon' => 'EXT:mkcontentai/Resources/Public/Icons/Extension.svg',
-            'labels' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf',
-        ]
-    );
-
-    TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_mkcontentai_domain_model_image', 'EXT:mkcontentai/Resources/Private/Language/locallang_csh_tx_mkcontentai_domain_model_image.xlf');
-    TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_mkcontentai_domain_model_image');
-})();
-
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['mkcontentaiSettingsPermissions'] = [
     'header' => 'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelMkcontentaiPermissions',
     'items' => [
@@ -48,4 +25,8 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['mkcontentaiSettingsPermi
             'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSettingsImageGenerationPrompt',
         ],
     ],
+];
+
+$GLOBALS['TCA']['tx_mkcontentai_domain_model_image']['ctrl']['security']['ignorePageTypeRestriction'] = [
+    'EXT:mkcontentai/Resources/Private/Language/locallang_csh_tx_mkcontentai_domain_model_image.xlf',
 ];

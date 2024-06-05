@@ -42,11 +42,6 @@ services:
                   $context: '@TYPO3\CMS\Core\Context\Context'
         public: true
 
-    DMK\MkContentAi\Backend\Hooks\ButtonBarHook:
-        arguments:
-            $permissionsUtility: '@DMK\MkContentAi\Utility\PermissionsUtility'
-        public: true
-
     DMK\MkContentAi\Service\SiteLanguageService:
         public: true
 
@@ -54,6 +49,11 @@ services:
         public: true
 
     DMK\MkContentAi\Service\AiAltTextService:
+        public: true
+
+    DMK\MkContentAi\Controller\BaseController:
+        arguments:
+            $pageRenderer: '@TYPO3\CMS\Core\Page\PageRenderer'
         public: true
 
     DMK\MkContentAi\Http\Client\Action\AltTextAction:

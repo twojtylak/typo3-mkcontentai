@@ -21,11 +21,10 @@ use DMK\MkContentAi\Utility\AiClientUtility;
 use DMK\MkContentAi\Utility\PermissionsUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Registry;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Fluid\View\TemplateView;
 
 class SettingsController extends BaseController
 {
@@ -47,16 +46,16 @@ class SettingsController extends BaseController
      */
     public function settingsAction(string $openAiApiKeyValue = '', array $stableDiffusionValues = [], string $stabilityAiApiValue = '', string $altTextAiApiValue = '', int $imageAiEngine = 0): ResponseInterface
     {
+        $this->initializeAction();
         $this->moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
-        /** @var TemplateView $view */
-        $view = $this->view;
+        $moduleTemplate = $this->createRequestModuleTemplate();
+
         if (false === $this->permissionsUtility->userHasAccessToSettings()) {
             $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
             $translatedMessage = LocalizationUtility::translate('labelErrorSettingsPermissions', 'mkcontentai') ?? '';
-            $this->addFlashMessage($translatedMessage, '', AbstractMessage::WARNING);
-            $moduleTemplate->setContent($view->renderSection('InsufficientPermissions'));
+            $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::WARNING, false);
 
-            return $this->htmlResponse($moduleTemplate->renderContent());
+            return $moduleTemplate->renderResponse('InsufficientPermissions');
         }
 
         $openAi = AiClientUtility::createOpenAiClient();
@@ -92,7 +91,7 @@ class SettingsController extends BaseController
             }
         }
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'openAiApiKey' => $openAi->getMaskedApiKey(),
                 'stableDiffusionApiKey' => $stableDiffusion->getMaskedApiKey(),
@@ -106,7 +105,7 @@ class SettingsController extends BaseController
         );
 
         try {
-            $this->view->assignMultiple(
+            $moduleTemplate->assignMultiple(
                 [
                     'stabeDiffusionModels' => array_merge(
                         [
@@ -119,7 +118,7 @@ class SettingsController extends BaseController
                 ]
             );
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR, false);
         }
         if (null === $this->moduleTemplateFactory) {
             $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
@@ -127,23 +126,20 @@ class SettingsController extends BaseController
             throw new \Exception($translatedMessage, 1623345720);
         }
 
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $moduleTemplate->setContent($this->view->render());
-
-        return $this->htmlResponse($moduleTemplate->renderContent());
+        return $moduleTemplate->renderResponse('Settings');
     }
 
     private function setLanguage(string $language, ClientInterface $client, SiteLanguageService $siteLanguageService): void
     {
         if ($language) {
             $siteLanguageService->setLanguage($language);
-            $throwedTranslatedMessage = LocalizationUtility::translate('labelSavedLanguage', 'mkcontentai') ?? '';
+            $translatedMessage = LocalizationUtility::translate('labelSavedLanguage', 'mkcontentai') ?? '';
 
-            $this->addFlashMessage($throwedTranslatedMessage);
+            $this->addFlashMessage($translatedMessage);
             try {
                 $client->validateApiCall();
             } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+                $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR, false);
             }
         }
     }
@@ -152,12 +148,12 @@ class SettingsController extends BaseController
     {
         if ($key) {
             $client->setApiKey($key);
-            $throwedTranslatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
-            $this->addFlashMessage($throwedTranslatedMessage);
+            $translatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
+            $this->addFlashMessage($translatedMessage);
             try {
                 $client->validateApiCall();
             } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+                $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR, false);
             }
         }
     }

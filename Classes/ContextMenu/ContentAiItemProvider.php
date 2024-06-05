@@ -102,12 +102,8 @@ class ContentAiItemProvider extends AbstractProvider
 
     public function generateUrl(string $itemName): UriInterface
     {
-        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
-        $majorVersion = $typo3Version->getMajorVersion();
-        $parameters = (11 === $majorVersion) ? $this->getParametersForVersion11($itemName) : $this->getParametersForVersion12($itemName);
-        $pathInfo = $this->getPathInfo($itemName, $majorVersion);
-
-        $this->updateParametersForItemName($parameters, $itemName, $majorVersion);
+        $parameters = $this->getParameters($itemName);
+        $pathInfo = $this->getPathInfo($itemName);
 
         /**
          * @var UriBuilder $uriBuilder
@@ -166,24 +162,12 @@ class ContentAiItemProvider extends AbstractProvider
      */
     protected function getAdditionalAttributes(string $itemName): array
     {
-        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
-
         $extendUrl = $this->generateUrl($itemName);
 
-        switch ($typo3Version->getMajorVersion()) {
-            case 12:
-                return [
-                    'data-callback-module' => '@t3docs/mkcontentai/context-menu-actions',
-                    'data-navigate-uri' => $extendUrl->__toString(),
-                ];
-            case 11:
-                return [
-                    'data-callback-module' => 'TYPO3/CMS/Mkcontentai/ContextMenu',
-                    'data-navigate-uri' => $extendUrl->__toString(),
-                ];
-            default:
-                throw new \RuntimeException('TYPO3 version not supported');
-        }
+        return [
+            'data-callback-module' => '@t3docs/mkcontentai/context-menu-actions',
+            'data-navigate-uri' => $extendUrl->__toString(),
+        ];
     }
 
     /**
@@ -206,57 +190,9 @@ class ContentAiItemProvider extends AbstractProvider
     }
 
     /**
-     * @param array<string, mixed> &$parameters
-     */
-    private function updateParametersForItemName(array &$parameters, string $itemName, int $version): void
-    {
-        $actionMapping = [
-            'fileUpscale' => 'upscale',
-            'fileExtend' => 'cropAndExtend',
-            'fileAlt' => 'altText',
-            'folderAltTexts' => 'altTexts',
-            'filePrepareImageToVideo' => 'prepareImageToVideo',
-        ];
-
-        if (11 === $version) {
-            $parameters['tx_mkcontentai_system_mkcontentaicontentai']['action'] = $actionMapping[$itemName] ?? '';
-        }
-
-        if (('fileAlt' === $itemName || 'folderAltTexts' === $itemName) && 11 === $version) {
-            $parameters['tx_mkcontentai_system_mkcontentaicontentai']['controller'] = 'AiText';
-        }
-
-        if (('filePrepareImageToVideo' === $itemName) && 11 === $version) {
-            $parameters['tx_mkcontentai_system_mkcontentaicontentai']['controller'] = 'AiVideo';
-        }
-    }
-
-    /**
      * @return array<string, mixed>
      */
-    private function getParametersForVersion11(string $itemName): array
-    {
-        if ('folderAltTexts' === $itemName) {
-            return [
-                'tx_mkcontentai_system_mkcontentaicontentai' => [
-                    'controller' => 'AiImage',
-                    'folderName' => $this->identifier,
-                ],
-            ];
-        }
-
-        return [
-            'tx_mkcontentai_system_mkcontentaicontentai' => [
-                'controller' => 'AiImage',
-                'file' => $this->identifier,
-            ],
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getParametersForVersion12(string $itemName): array
+    private function getParameters(string $itemName): array
     {
         if ('folderAltTexts' === $itemName) {
             return ['folderName' => $this->identifier];
@@ -265,32 +201,29 @@ class ContentAiItemProvider extends AbstractProvider
         return ['file' => $this->identifier];
     }
 
-    private function getPathInfo(string $itemName, int $version): string
+    private function getPathInfo(string $itemName): string
     {
+        $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
+
         $pathInfoMapping = [
             'fileUpscale' => [
-                12 => '/module/mkcontentai/AiImage/upscale',
-                11 => '/module/system/MkcontentaiContentai',
+                $majorVersion => '/module/mkcontentai/AiImage/upscale',
             ],
             'fileExtend' => [
-                12 => '/module/mkcontentai/AiImage/cropAndExtend',
-                11 => '/module/system/MkcontentaiContentai',
+                $majorVersion => '/module/mkcontentai/AiImage/cropAndExtend',
             ],
             'fileAlt' => [
-                12 => '/module/mkcontentai/AiText/altText',
-                11 => '/module/system/MkcontentaiContentai',
+                $majorVersion => '/module/mkcontentai/AiText/altText',
             ],
             'folderAltTexts' => [
-                12 => '/module/mkcontentai/AiText/altTexts',
-                11 => '/module/system/MkcontentaiContentai',
+                $majorVersion => '/module/mkcontentai/AiText/altTexts',
             ],
             'filePrepareImageToVideo' => [
-                12 => '/module/mkcontentai/AiVideo/prepareImageToVideo',
-                11 => '/module/system/MkcontentaiContentai',
+                $majorVersion => '/module/mkcontentai/AiVideo/prepareImageToVideo',
             ],
         ];
 
-        return $pathInfoMapping[$itemName][$version] ?? '';
+        return $pathInfoMapping[$itemName][$majorVersion] ?? '';
     }
 
     /**

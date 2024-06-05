@@ -20,7 +20,6 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
 use TYPO3\CMS\Core\Http\ServerRequestFactory;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -51,9 +50,10 @@ class ModifyFilelistButtonBarEventListener
         $buttons = $event->getButtons();
         $request = ServerRequestFactory::fromGlobals();
         $currentUri = $request->getUri()->getPath();
+        $iconSize = 'small';
 
         if ('/typo3/module/file/list' === $currentUri) {
-            $icon = $this->iconFactory->getIcon('actions-image', Icon::SIZE_SMALL);
+            $icon = $this->iconFactory->getIcon('actions-image', $iconSize);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][1][] = $event->getButtonBar()
                 ->makeLinkButton()
                 ->setTitle(htmlspecialchars($translatedMessage))

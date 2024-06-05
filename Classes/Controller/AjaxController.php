@@ -23,8 +23,10 @@ use DMK\MkContentAi\Service\FileService;
 use DMK\MkContentAi\Service\SiteLanguageService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -36,16 +38,20 @@ class AjaxController extends BaseController
 
     private SiteLanguageService $siteLanguageService;
 
-    public function __construct()
+    protected ?PageRenderer $pageRenderer;
+
+    protected ?ModuleTemplateFactory $moduleTemplateFactory;
+
+    public function __construct(PageRenderer $pageRenderer, ModuleTemplateFactory $moduleTemplateFactory, FileService $fileService, AiAltTextService $aiAltTextService, SiteLanguageService $siteLanguageService)
     {
-        $this->fileService = GeneralUtility::makeInstance(FileService::class);
-        $this->aiAltTextService = GeneralUtility::makeInstance(AiAltTextService::class);
-        $this->siteLanguageService = GeneralUtility::makeInstance(SiteLanguageService::class);
+        $this->pageRenderer = $pageRenderer;
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
+        parent::__construct($this->pageRenderer, $this->moduleTemplateFactory);
+        $this->fileService = $fileService;
+        $this->aiAltTextService = $aiAltTextService;
+        $this->siteLanguageService = $siteLanguageService;
     }
 
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     public function blobImage(ServerRequestInterface $request): ResponseInterface
     {
         /** @var array<mixed> $parsedBody */

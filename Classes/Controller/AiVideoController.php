@@ -19,7 +19,9 @@ namespace DMK\MkContentAi\Controller;
 
 use DMK\MkContentAi\Service\FileService;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\File;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -38,10 +40,15 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class AiVideoController extends BaseController
 {
+    protected ?PageRenderer $pageRenderer;
+
+    protected ?ModuleTemplateFactory $moduleTemplateFactory;
+
     private FileService $fileService;
 
-    public function __construct(FileService $fileService)
+    public function __construct(FileService $fileService, PageRenderer $pageRenderer, ModuleTemplateFactory $moduleTemplateFactory)
     {
+        parent::__construct($pageRenderer, $moduleTemplateFactory);
         $this->fileService = $fileService;
     }
 
@@ -56,18 +63,19 @@ class AiVideoController extends BaseController
     public function imageToVideoAction(File $file, string $base64)
     {
         $this->initializeAction();
+        $moduleTemplate = $this->createRequestModuleTemplate();
 
         try {
             $filePath = $this->fileService->saveTempBase64Image($base64);
             $generatedVideo = $this->client->imageToVideo($filePath);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
 
             return $this->redirect('filelist', 'AiImage');
         }
         $translatedMessage = LocalizationUtility::translate('mlang_label_image_to_video_generated', 'mkcontentai') ?? '';
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'croppedImage' => $base64,
                 'sourceFile' => $file,
@@ -75,14 +83,16 @@ class AiVideoController extends BaseController
                 'clientApi' => substr(get_class($this->client), 28),
             ]
         );
-        $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
+        $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::INFO, false);
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function prepareImageToVideoAction(File $file): ResponseInterface
     {
-        $this->view->assignMultiple(
+        $moduleTemplate = $this->createRequestModuleTemplate();
+
+        $moduleTemplate->assignMultiple(
             [
                 'options' => $this->client->getAvailableResolutions($this->request->getControllerActionName()),
                 'file' => $file,
@@ -94,7 +104,7 @@ class AiVideoController extends BaseController
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function saveFileAction(File $sourceFile, string $videoUrl): ResponseInterface
@@ -103,23 +113,9 @@ class AiVideoController extends BaseController
         try {
             $fileService->saveFileFromUrl($videoUrl, $sourceFile->getOriginalResource()->getNameWithoutExtension().' - generated video', $sourceFile->getOriginalResource()->getNameWithoutExtension().'_generated_video', '.mp4');
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
         }
 
         return $this->redirect('filelist', 'AiImage');
-    }
-
-    protected function handleResponse(): ResponseInterface
-    {
-        if (null === $this->moduleTemplateFactory) {
-            $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
-
-            throw new \Exception($translatedMessage, 1623345720);
-        }
-
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $moduleTemplate->setContent($this->view->render());
-
-        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 }

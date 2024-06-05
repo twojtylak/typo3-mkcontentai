@@ -1,12 +1,25 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true">
+{namespace dmk=DMK\MkContentAi\ViewHelpers}
 
-    <f:be.pageRenderer />
+<div class="module" data-module-name="{moduleName}">
+    <div class="module-body t3js-module-body">
 
-    <f:render partial="Navigation" />
+        <f:render partial="Navigation"/>
+        <f:render section="Content"/>
 
-    <f:render section="Content" />
-
+        <f:be.pageRenderer
+            includeJavaScriptModules="{
+         0: '@t3docs/mkcontentai/cropper.js',
+         1: '@t3docs/mkcontentai/MkContentAi.js',
+         2: '@t3docs/mkcontentai/BackendPrompt.js'
+         3: '@t3docs/mkcontentai/context-menu-actions.js'
+         4: '@t3docs/mkcontentai/AltText.js'
+         5: '@t3docs/mkcontentai/ContextMenu.js'
+      }"/>
+    </div>
+</div>
 </html>

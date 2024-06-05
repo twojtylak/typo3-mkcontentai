@@ -20,14 +20,14 @@ $EM_CONF['mkcontentai'] = [
     'author' => 'DMK E-BUSINESS GmbH',
     'author_email' => 'dev@dmk-ebusiness.de',
     'author_company' => 'DMK E-BUSINESS GmbH',
-    'version' => '12.1.1',
+    'version' => '13.0.0',
     'state' => 'stable',
     'uploadfolder' => 0,
     'createDirs' => '',
     'clearCacheOnLoad' => 0,
     'constraints' => [
         'depends' => [
-            'typo3' => '11.5.0-12.4.99',
+            'typo3' => '12.4.0-13.0.99',
         ],
         'conflicts' => [
         ],

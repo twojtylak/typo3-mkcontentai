@@ -20,7 +20,6 @@ namespace DMK\MkContentAi\Backend\EventListener;
 use DMK\MkContentAi\Utility\PermissionsUtility;
 use TYPO3\CMS\Backend\Form\Event\CustomFileControlsEvent;
 use TYPO3\CMS\Backend\Form\NodeFactory;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -51,16 +50,17 @@ final class CustomFileControlsEventListener
         if (!$this->permissionsUtility->userHasAccessToImageGenerationPromptButton()) {
             return;
         }
-
+        $iconSize = 'small';
         $translatedMessage = LocalizationUtility::translate('labelAiGenerateText', 'mkcontentai') ?? '';
         $item = ' <div class="form-control-wrap"><button type="button" class="btn btn-default t3js-prompt" id="prompt">';
-        $item .= $this->iconFactory->getIcon('actions-image', Icon::SIZE_SMALL)->render().' ';
+        $item .= $this->iconFactory->getIcon('actions-image', $iconSize)->render().' ';
         $item .= htmlspecialchars($translatedMessage);
         $item .= '</button></div>';
 
         $event->addControl($item);
 
         $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/BackendPrompt');
+
+        $pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/BackendPrompt.js');
     }
 }
