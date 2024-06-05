@@ -164,14 +164,9 @@ class AiImageController extends BaseController
         }
 
         try {
-            $filePath = '';
-            if ($base64) {
-                $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
-                $filePath = $fileService->saveTempBase64Image($base64);
-            }
-            if ($file && '' === $filePath) {
-                $filePath = $file->getOriginalResource()->getForLocalProcessing(false);
-            }
+            $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
+            $filePath = $fileService->getFilePath($base64, $file);
+
             if ('' == $filePath) {
                 $translatedMessage = LocalizationUtility::translate('labelErrorNoFileProvided', 'mkcontentai') ?? '';
 
@@ -179,7 +174,11 @@ class AiImageController extends BaseController
             }
             $images = $this->client->extend($filePath, $direction, $promptText);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            if (403 === $e->getCode() || strpos($e->getMessage(), '401')) {
+                $this->addFlashMessage(LocalizationUtility::translate('labelErrorInvalidApiKey', 'mkcontentai', [substr(get_class($this->client), 28, -6)]) ?? '', '', AbstractMessage::ERROR);
+            }
+
+            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
             $this->redirect('filelist');
         }
 

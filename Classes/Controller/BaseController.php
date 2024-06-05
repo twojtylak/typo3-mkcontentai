@@ -69,7 +69,8 @@ class BaseController extends ActionController
             $this->addFlashMessage(
                 $client['error'],
                 '',
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
+                false
             );
 
             return;
@@ -92,7 +93,8 @@ class BaseController extends ActionController
         $this->addFlashMessage(
             $infoMessage,
             '',
-            AbstractMessage::INFO
+            AbstractMessage::INFO,
+            false
         );
     }
 

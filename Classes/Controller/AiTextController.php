@@ -79,7 +79,7 @@ class AiTextController extends BaseController
 
         if (null == $files) {
             $translatedMessage = LocalizationUtility::translate('labelInfoAlttextAlreadyDefined', 'mkcontentai') ?? '';
-            $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
+            $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO, false);
 
             return $this->handleResponse();
         }
@@ -107,7 +107,7 @@ class AiTextController extends BaseController
         $altTexts = $this->getAltTextForFiles($folderName);
         $this->aiAltTextService->saveAltTextsMetaData($altTexts);
         $translatedMessage = LocalizationUtility::translate('labelAlttextsGenerated', 'mkcontentai') ?? '';
-        $this->addFlashMessage($translatedMessage, '', AbstractMessage::OK);
+        $this->addFlashMessage($translatedMessage, '', AbstractMessage::OK, false);
         $this->view->assignMultiple(
             [
                 'files' => $altTexts,
@@ -146,8 +146,11 @@ class AiTextController extends BaseController
             $altTextFromFile = $this->aiAltTextService->getAltText($file);
         } catch (\Exception $e) {
             (413 === $e->getCode())
-            ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', AbstractMessage::ERROR)
-            : $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', AbstractMessage::ERROR, false)
+            : $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
+            (403 === $e->getCode())
+                ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorInvalidApiKey', 'mkcontentai', ['AltText']) ?? '', '', AbstractMessage::ERROR, false)
+                : $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
 
             return null;
         }
@@ -164,7 +167,7 @@ class AiTextController extends BaseController
         try {
             $finalFilesWithAltText = $this->aiAltTextService->getMultipleAltTextsForImages($folderName);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
         }
 
         return $finalFilesWithAltText;
