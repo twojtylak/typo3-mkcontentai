@@ -19,9 +19,7 @@ namespace DMK\MkContentAi\Backend\EventListener;
 
 use DMK\MkContentAi\ContextMenu\ContentAiItemProvider;
 use Psr\Http\Message\UriInterface;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -30,19 +28,10 @@ use TYPO3\CMS\Filelist\Event\ProcessFileListActionsEvent;
 final class FileListActionsEventListener
 {
     protected ContentAiItemProvider $contentAiItemProvider;
-    private Typo3Version $typo3Version;
 
-    public function __construct(Typo3Version $typo3Version)
+    public function __construct()
     {
-        $this->typo3Version = $typo3Version;
-
-        if (11 === $this->typo3Version->getMajorVersion()) {
-            $this->contentAiItemProvider = GeneralUtility::makeInstance(ContentAiItemProvider::class, '', '');
-        }
-
-        if (12 === $this->typo3Version->getMajorVersion()) {
-            $this->contentAiItemProvider = GeneralUtility::makeInstance(ContentAiItemProvider::class);
-        }
+        $this->contentAiItemProvider = GeneralUtility::makeInstance(ContentAiItemProvider::class);
     }
 
     public function handleEvent(ProcessFileListActionsEvent $event): void
@@ -76,30 +65,15 @@ final class FileListActionsEventListener
 
     private function buildAltTextAction(UriInterface $uriGenerated, ?string $labelActionName): string
     {
-        switch ($this->typo3Version->getMajorVersion()) {
-            case 11:
-                $altTextAction = '
-        <a href='.$uriGenerated.' class="btn btn-default" title="'.$labelActionName.'"><span class="t3js-icon icon icon-size-small icon-state-default">
-	<span class="icon-markup">
-<svg class="icon-color"><use xlink:href="/typo3/sysext/core/Resources/Public/Icons/T3Icons/sprites/actions.svg#actions-rocket" /></svg>
-	</span>
-</span></a>';
-
-                return $altTextAction;
-
-            case 12:
-                $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-                $altTextAction = '
+        $iconSize = 'small';
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $altTextAction = '
         <a href='.$uriGenerated.' class="dropdown-item dropdown-item-spaced"  title="'.$labelActionName.'"><span class="t3js-icon icon icon-size-small icon-state-default icon-actions-rocket">
 	<span class="icon-markup">
-	'.$iconFactory->getIcon('actions-rocket', Icon::SIZE_SMALL)->getMarkup().'
+	'.$iconFactory->getIcon('actions-rocket', $iconSize)->getMarkup().'
 	</span>
 </span></a>';
 
-                return $altTextAction;
-
-            default:
-                return '';
-        }
+        return $altTextAction;
     }
 }

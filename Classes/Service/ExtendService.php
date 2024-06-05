@@ -268,4 +268,32 @@ class ExtendService
 
         return $images;
     }
+
+    /**
+     * @return \GdImage|false|resource
+     *
+     * @throws \Exception
+     */
+    public function createImageFromFile(string $sourceImg)
+    {
+        $imageInfo = pathinfo($sourceImg);
+
+        if (!array_key_exists('extension', $imageInfo)) {
+            throw new \Exception(sprintf('Wrong extension file provided'));
+        }
+
+        $extension = strtolower($imageInfo['extension']);
+
+        switch ($extension) {
+            case 'gif':
+                return imagecreatefromgif($sourceImg);
+            case 'png':
+                return imagecreatefrompng($sourceImg);
+            case 'jpg':
+            case 'jpeg':
+                return imagecreatefromjpeg($sourceImg);
+        }
+
+        throw new \Exception(sprintf('Unable to create image with extension %s', $extension));
+    }
 }

@@ -23,7 +23,7 @@ use DMK\MkContentAi\Http\Client\StabilityAiClient;
 use DMK\MkContentAi\Http\Client\StableDiffusionClient;
 use DMK\MkContentAi\Service\FileService;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\File;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -68,14 +68,16 @@ class AiImageController extends BaseController
     public function filelistAction()
     {
         $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
-        $this->view->assignMultiple(
+
+        $moduleTemplate = $this->createRequestModuleTemplate();
+        $moduleTemplate->assignMultiple(
             [
                 'files' => $fileService->getFiles(),
                 'client' => $this->client,
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     /**
@@ -83,21 +85,23 @@ class AiImageController extends BaseController
      */
     public function variantsAction(File $file)
     {
+        $moduleTemplate = $this->createRequestModuleTemplate();
+
         try {
             $images = $this->client->createImageVariation($file);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             $this->redirect('filelist');
         }
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'images' => $images,
                 'originalFile' => $file,
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     /**
@@ -105,7 +109,9 @@ class AiImageController extends BaseController
      */
     public function promptAction()
     {
-        return $this->handleResponse();
+        $moduleTemplate = $this->createRequestModuleTemplate();
+
+        return $moduleTemplate->renderResponse();
     }
 
     /**
@@ -115,21 +121,22 @@ class AiImageController extends BaseController
      */
     public function promptResultAction(string $text)
     {
+        $moduleTemplate = $this->createRequestModuleTemplate();
         try {
             $images = $this->client->image($text);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             $this->redirect('prompt');
         }
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'images' => $images,
                 'text' => $text,
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     /**
@@ -140,7 +147,7 @@ class AiImageController extends BaseController
         try {
             $upscaledImage = $this->client->upscale($file);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
 
             return $this->redirect('filelist');
         }
@@ -149,7 +156,7 @@ class AiImageController extends BaseController
         $fileService->saveFileFromUrl($upscaledImage->getUrl(), 'upscaled image', $file->getOriginalResource()->getNameWithoutExtension().'_upscaled');
         $translatedMessage = LocalizationUtility::translate('mlang_label_upscaled_image_saved', 'mkcontentai') ?? '';
 
-        $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
+        $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::INFO);
 
         return $this->redirect('filelist');
     }
@@ -159,6 +166,8 @@ class AiImageController extends BaseController
      */
     public function extendAction(string $direction, ?File $file = null, string $base64 = '', ?string $promptText = '')
     {
+        $moduleTemplate = $this->createRequestModuleTemplate();
+
         if (!isset($promptText) || '' === $promptText) {
             $promptText = 'extend image content';
         }
@@ -179,11 +188,11 @@ class AiImageController extends BaseController
             }
             $images = $this->client->extend($filePath, $direction, $promptText);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
             $this->redirect('filelist');
         }
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'images' => $images,
                 'originalFile' => $file,
@@ -191,7 +200,7 @@ class AiImageController extends BaseController
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function cropAndExtendAction(File $file, ?string $promptText = ''): ResponseInterface
@@ -200,7 +209,8 @@ class AiImageController extends BaseController
             $promptText = 'extending content image';
         }
 
-        $this->view->assignMultiple(
+        $moduleTemplate = $this->createRequestModuleTemplate();
+        $moduleTemplate->assignMultiple(
             [
                 'options' => $this->client->getAvailableResolutions($this->request->getControllerActionName()),
                 'file' => $file,
@@ -213,7 +223,7 @@ class AiImageController extends BaseController
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function saveFileAction(string $imageUrl, string $description = ''): ResponseInterface
@@ -222,23 +232,9 @@ class AiImageController extends BaseController
         try {
             $fileService->saveFileFromUrl($imageUrl, $description);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
         }
 
         return $this->redirect('filelist');
-    }
-
-    protected function handleResponse(): ResponseInterface
-    {
-        if (null === $this->moduleTemplateFactory) {
-            $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
-
-            throw new \Exception($translatedMessage, 1623345720);
-        }
-
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $moduleTemplate->setContent($this->view->render());
-
-        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 }

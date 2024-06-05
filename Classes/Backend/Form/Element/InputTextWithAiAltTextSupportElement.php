@@ -18,9 +18,10 @@ declare(strict_types=1);
 namespace DMK\MkContentAi\Backend\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\InputTextElement;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -38,21 +39,31 @@ class InputTextWithAiAltTextSupportElement extends InputTextElement
             return $resultArray;
         }
 
+        $iconSize = 'small';
         $html = explode(LF, $resultArray['html']);
         $fileUid = $this->data['databaseRow']['uid_local'][0]['uid'];
         $pageLanguageUid = $this->data['databaseRow']['sys_language_uid'];
 
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $item[] = ' <div data-uid-local="'.$fileUid.'" data-sys-language-uid="'.$pageLanguageUid.'"class="formengine-field-item t3js-formengine-field-item form-description">
- <button type="button" class="btn btn-default t3js-prompt  alt-refresh">
+ <button type="button" class="btn btn-default t3js-prompt alt-refresh">
  <span class="spinner-border spinner-border-sm" style="display: none"></span>';
-        $item[] = $iconFactory->getIcon('actions-image', Icon::SIZE_SMALL)->render().' ';
+        $item[] = $iconFactory->getIcon('actions-image', $iconSize)->render().' ';
         $item[] = htmlspecialchars($translatedMessage);
         $item[] = '</button></div>';
 
         array_splice($html, 3, 0, $item);
         $resultArray['html'] = implode(LF, $html);
-        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Mkcontentai/AltText');
+
+        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
+
+        if (12 === $typo3Version->getMajorVersion()) {
+            $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('@t3docs/mkcontentai/AltText.js');
+
+            return $resultArray;
+        }
+
+        GeneralUtility::makeInstance(PageRenderer::class)->loadJavaScriptModule('@t3docs/mkcontentai/AltText.js');
 
         return $resultArray;
     }

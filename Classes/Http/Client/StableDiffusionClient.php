@@ -318,6 +318,10 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
      */
     public function modelList(): array
     {
+        if (empty($this->getApiKey())) {
+            return [];
+        }
+
         $response = $this->request($this->stableDiffusionAction->getActions()['model_list'], [], $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
         $response = $this->validateResponse($response->getContent());

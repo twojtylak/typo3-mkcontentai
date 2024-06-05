@@ -50,7 +50,8 @@ class SiteLanguageService
             foreach ($siteLanguages as $siteLanguage) {
                 /** @var array<string, string> $language */
                 $language = $siteLanguage->toArray();
-                if ($language['twoLetterIsoCode'] === $this->getLanguage()) {
+
+                if ($this->getTwoLetterIsoCode($language) === $this->getLanguage()) {
                     return $language['title'];
                 }
             }
@@ -78,7 +79,7 @@ class SiteLanguageService
             foreach ($siteLanguages as $siteLanguage) {
                 /** @var array<string, string> $language */
                 $language = $siteLanguage->toArray();
-                $languageCode[$language['twoLetterIsoCode']] = $language['title'];
+                $languageCode[$this->getTwoLetterIsoCode($language)] = $language['title'];
             }
         }
 
@@ -101,9 +102,17 @@ class SiteLanguageService
         }
 
         if (isset($languages[$uid])) {
-            return $languages[$uid]['twoLetterIsoCode'];
+            return substr($languages[$uid]['locale'], 0, 2);
         }
 
         return null;
+    }
+
+    /**
+     * @param array<string, string> $language
+     */
+    public function getTwoLetterIsoCode(array $language): string
+    {
+        return substr($language['locale'], 0, 2);
     }
 }

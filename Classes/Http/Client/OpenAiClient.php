@@ -88,7 +88,7 @@ class OpenAiClient extends BaseClient implements ImageApiInterface
         $extendService = GeneralUtility::makeInstance(ExtendService::class);
 
         // preparing mask
-        $source = $extendService->graphicalFunctions->imageCreateFromFile($sourceImagePath);
+        $source = $extendService->createImageFromFile($sourceImagePath);
 
         $resolutionForExtended = $extendService->resolutionForExtendedImage($sourceImagePath, $direction);
 

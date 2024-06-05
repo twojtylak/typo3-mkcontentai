@@ -19,11 +19,11 @@ use DMK\MkContentAi\Http\Client\ImageApiInterface;
 use DMK\MkContentAi\Http\Client\OpenAiClient;
 use DMK\MkContentAi\Http\Client\StabilityAiClient;
 use DMK\MkContentAi\Http\Client\StableDiffusionClient;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -42,38 +42,30 @@ class BaseController extends ActionController
         3 => StabilityAiClient::class,
     ];
 
+    protected ?PageRenderer $pageRenderer;
+
     protected ?ModuleTemplateFactory $moduleTemplateFactory;
 
-    public function injectModuleTemplateFactory(ModuleTemplateFactory $moduleTemplateFactory): void
+    public function __construct(PageRenderer $pageRenderer, ModuleTemplateFactory $moduleTemplateFactory)
     {
+        $this->pageRenderer = $pageRenderer;
         $this->moduleTemplateFactory = $moduleTemplateFactory;
     }
 
     protected function initializeAndAuthorizeAction(): void
     {
-        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/MkContentAi');
-        $pageRenderer->addRequireJsConfiguration(
-            [
-                'paths' => [
-                    'cropper' => PathUtility::getPublicResourceWebPath('EXT:mkcontentai/Resources/Public/JavaScript/cropper'),
-                ],
-                'shim' => [
-                    'cropper' => ['exports' => 'cropper'],
-                ],
-            ]
-        );
-
         $client = $this->initializeClient();
-        if (isset($client['error'])) {
-            $this->addFlashMessage(
-                $client['error'],
-                '',
-                AbstractMessage::ERROR
-            );
 
-            return;
+        if (!isset($this->pageRenderer)) {
+            throw new \Exception('PageRenderer is not set');
         }
+        $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/cropper.js');
+        $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/MkContentAi.js');
+        $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/BackendPrompt.js');
+        $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/AltText.js');
+        $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/context-menu-actions.js');
+        $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/ContextMenu.js');
+
         if (isset($client['client'])) {
             $this->client = $client['client'];
         }
@@ -81,7 +73,7 @@ class BaseController extends ActionController
         $arguments['actionName'] = $this->request->getControllerActionName();
         if (!in_array($arguments['actionName'], $this->client->getAllowedOperations())) {
             $translatedMessage = LocalizationUtility::translate('labelNotAllowed', 'mkcontentai', $arguments) ?? '';
-            $this->addFlashMessage($translatedMessage.' '.get_class($this->client), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($translatedMessage.' '.get_class($this->client), '', ContextualFeedbackSeverity::ERROR);
             $this->redirect('filelist');
         }
 
@@ -92,8 +84,19 @@ class BaseController extends ActionController
         $this->addFlashMessage(
             $infoMessage,
             '',
-            AbstractMessage::INFO
+            ContextualFeedbackSeverity::INFO,
+            false
         );
+    }
+
+    protected function createRequestModuleTemplate(): ModuleTemplate
+    {
+        if (!isset($this->moduleTemplateFactory)) {
+            $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
+            throw new \Exception($translatedMessage, 1623345720);
+        }
+
+        return $this->moduleTemplateFactory->create($this->request);
     }
 
     /**

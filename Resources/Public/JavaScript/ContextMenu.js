@@ -4,7 +4,7 @@
  * JavaScript to handle the click action of the "Hello World" context menu item
  * @exports TYPO3/CMS/Mkcontentai/ContextMenu
  */
-define(function () {
+(function () {
     'use strict';
 
     /**

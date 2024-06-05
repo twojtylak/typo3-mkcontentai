@@ -22,8 +22,10 @@ use DMK\MkContentAi\Service\AiAltTextService;
 use DMK\MkContentAi\Service\SiteLanguageService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\File;
 use TYPO3\CMS\Extbase\Http\ForwardResponse;
@@ -44,16 +46,23 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class AiTextController extends BaseController
 {
     public AiAltTextService $aiAltTextService;
+
     public SiteLanguageService $siteLanguageService;
 
-    public function __construct(AiAltTextService $aiAltTextService, SiteLanguageService $siteLanguageService)
+    protected ?PageRenderer $pageRenderer;
+
+    protected ?ModuleTemplateFactory $moduleTemplateFactory;
+
+    public function __construct(AiAltTextService $aiAltTextService, SiteLanguageService $siteLanguageService, PageRenderer $pageRenderer, ModuleTemplateFactory $moduleTemplateFactory)
     {
+        parent::__construct($pageRenderer, $moduleTemplateFactory);
         $this->aiAltTextService = $aiAltTextService;
         $this->siteLanguageService = $siteLanguageService;
     }
 
     public function altTextAction(File $file): ResponseInterface
     {
+        $moduleTemplate = $this->createRequestModuleTemplate();
         $altText = $this->getAltTextForFile($file);
 
         if (null === $altText || '' === $altText) {
@@ -62,7 +71,7 @@ class AiTextController extends BaseController
             return $response->withControllerName('AiImage');
         }
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'file' => $file,
                 'altText' => $altText,
@@ -70,24 +79,24 @@ class AiTextController extends BaseController
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function altTextsAction(string $folderName): ResponseInterface
     {
+        $moduleTemplate = $this->createRequestModuleTemplate();
         $files = $this->getAltTextForFiles($folderName);
 
         if (null == $files) {
             $translatedMessage = LocalizationUtility::translate('labelInfoAlttextAlreadyDefined', 'mkcontentai') ?? '';
-            $this->addFlashMessage($translatedMessage, '', AbstractMessage::INFO);
+            $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::INFO, false);
 
-            return $this->handleResponse();
+            return $moduleTemplate->renderResponse();
         }
 
-        $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/AltText');
+        $this->initializeAction();
 
-        $this->view->assignMultiple(
+        $moduleTemplate->assignMultiple(
             [
                 'files' => $files,
                 'folderName' => $folderName,
@@ -99,16 +108,17 @@ class AiTextController extends BaseController
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function altTextsSaveAction(string $folderName): ResponseInterface
     {
+        $moduleTemplate = $this->createRequestModuleTemplate();
         $altTexts = $this->getAltTextForFiles($folderName);
         $this->aiAltTextService->saveAltTextsMetaData($altTexts);
         $translatedMessage = LocalizationUtility::translate('labelAlttextsGenerated', 'mkcontentai') ?? '';
-        $this->addFlashMessage($translatedMessage, '', AbstractMessage::OK);
-        $this->view->assignMultiple(
+        $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::OK);
+        $moduleTemplate->assignMultiple(
             [
                 'files' => $altTexts,
                 'folderName' => $folderName,
@@ -116,7 +126,7 @@ class AiTextController extends BaseController
             ]
         );
 
-        return $this->handleResponse();
+        return $moduleTemplate->renderResponse();
     }
 
     public function altTextSaveAction(File $file): ResponseInterface
@@ -146,8 +156,8 @@ class AiTextController extends BaseController
             $altTextFromFile = $this->aiAltTextService->getAltText($file);
         } catch (\Exception $e) {
             (413 === $e->getCode())
-            ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', AbstractMessage::ERROR)
-            : $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', ContextualFeedbackSeverity::ERROR)
+            : $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
 
             return null;
         }
@@ -164,7 +174,7 @@ class AiTextController extends BaseController
         try {
             $finalFilesWithAltText = $this->aiAltTextService->getMultipleAltTextsForImages($folderName);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
         }
 
         return $finalFilesWithAltText;
@@ -178,9 +188,8 @@ class AiTextController extends BaseController
             throw new \Exception($translatedMessage, 1623345720);
         }
 
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        $moduleTemplate->setContent($this->view->render());
+        $moduleTemplate = $this->createRequestModuleTemplate();
 
-        return $this->htmlResponse($moduleTemplate->renderContent());
+        return $moduleTemplate->renderResponse();
     }
 }

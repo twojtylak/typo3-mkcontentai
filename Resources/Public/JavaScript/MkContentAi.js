@@ -1,24 +1,26 @@
-define(['jquery', 'cropper'], function ($, Cropper) {
-    $(document).ready(function () {
-        $("form :submit").not(".noSpinner").click(function () {
-            $(this).prop("disabled", true);
-            $(this).closest('form').submit();
-            $(this).closest('form').html(
-                `<i class="fa fa-spinner fa-spin"></i> Loading`
-            );
-        });
-        $(".btn:not(form .btn)").not(".noSpinner").click(function () {
-            $(this).prop("disabled", true);
-            $(this).html(
-                `<i class="fa fa-spinner fa-spin"></i> Loading`
-            );
-        });
-        $("ul li .dropdown-item").click(function () {
-            $(this).prop("disabled", true);
-            $(this).closest('div').html(
-                `<i class="fa fa-spinner fa-spin"></i> Loading`
-            );
-        });
+import $ from "jquery";
+import Cropper from 'cropperjs';
+
+$(document).ready(function () {
+    $("form :submit").not(".noSpinner").click(function () {
+        $(this).prop("disabled", true);
+        $(this).closest('form').submit();
+        $(this).closest('form').html(
+            `<i class="fa fa-spinner fa-spin"></i> Loading`
+        );
+    });
+    $(".btn:not(form .btn)").not(".noSpinner").click(function () {
+        $(this).prop("disabled", true);
+        $(this).html(
+            `<i class="fa fa-spinner fa-spin"></i> Loading`
+        );
+    });
+    $("ul li .dropdown-item").click(function () {
+        $(this).prop("disabled", true);
+        $(this).closest('div').html(
+            `<i class="fa fa-spinner fa-spin"></i> Loading`
+        );
+    });
 
         const image = document.getElementById('image');
         const action = document.getElementById('operationName').value;
@@ -50,6 +52,7 @@ define(['jquery', 'cropper'], function ($, Cropper) {
 
             const inputs = document.querySelectorAll('input[name="size"]');
             let disabledInputsCount = 0;
+            let element;
 
             for (let i = 0; element = inputs[i]; i++) {
                 element.disabled = false;
@@ -146,4 +149,3 @@ define(['jquery', 'cropper'], function ($, Cropper) {
             }
         }
     });
-});
