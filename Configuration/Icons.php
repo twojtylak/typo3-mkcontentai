@@ -18,4 +18,8 @@ return [
         'provider' => TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
         'source' => 'EXT:mkcontentai/Resources/Public/Icons/Extension.svg',
     ],
+    'mkcontentai2' => [
+        'provider' => TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        'source' => 'EXT:mkcontentai/Resources/Public/Icons/ExtensionFullLogo.svg',
+    ],
 ];

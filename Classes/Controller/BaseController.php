@@ -53,6 +53,7 @@ class BaseController extends ActionController
     {
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/MkContentAi');
+        $pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
         $pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [

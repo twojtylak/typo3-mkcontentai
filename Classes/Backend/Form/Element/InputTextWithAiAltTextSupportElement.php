@@ -44,7 +44,7 @@ class InputTextWithAiAltTextSupportElement extends InputTextElement
 
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $item[] = ' <div data-uid-local="'.$fileUid.'" data-sys-language-uid="'.$pageLanguageUid.'"class="formengine-field-item t3js-formengine-field-item form-description">
- <button type="button" class="btn btn-default t3js-prompt  alt-refresh">
+ <button type="button" class="btn btn-primary t3js-prompt  alt-refresh">
  <span class="spinner-border spinner-border-sm" style="display: none"></span>';
         $item[] = $iconFactory->getIcon('actions-image', Icon::SIZE_SMALL)->render().' ';
         $item[] = htmlspecialchars($translatedMessage);

@@ -1,0 +1,10 @@
+.custom-icon-container {
+    width: 256px;
+    height: 64px;
+}
+
+.custom-icon-container .icon {
+    font-size: inherit;
+    width: inherit;
+    height: inherit;
+}

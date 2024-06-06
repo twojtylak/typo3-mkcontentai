@@ -22,6 +22,7 @@ use DMK\MkContentAi\Utility\PermissionsUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -47,6 +48,9 @@ class SettingsController extends BaseController
      */
     public function settingsAction(string $openAiApiKeyValue = '', array $stableDiffusionValues = [], string $stabilityAiApiValue = '', string $altTextAiApiValue = '', int $imageAiEngine = 0): ResponseInterface
     {
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
+
         $this->moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
         /** @var TemplateView $view */
         $view = $this->view;
@@ -102,6 +106,10 @@ class SettingsController extends BaseController
                 'imageAiEngine' => SettingsController::getImageAiEngine(),
                 'altTextAiLanguage' => $siteLanguageService->getAllAvailableLanguages(),
                 'selectedAltTextAiLanguage' => $siteLanguageService->getLanguage(),
+                'validateApiKeyOpenAi' => $openAi->validateApiKey(),
+                'validateApiKeyStabilityAi' => $stabilityAi->validateApiKey(),
+                'validateApiKeyStableDiffusionAi' => $stableDiffusion->validateApiKey(),
+                'validateApiKeyAltTextAi' => $altTextAi->validateApiKey(),
             ]
         );
 

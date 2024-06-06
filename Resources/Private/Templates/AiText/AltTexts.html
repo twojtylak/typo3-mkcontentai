@@ -14,7 +14,7 @@
         <div class="form-group">
             <f:form.hidden name="folderName" value="{folderName}"/>
             <f:if condition="{files} -> f:count()>0">
-            <f:form.submit class="btn btn-default" value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelApproveAll"/>'/>
+            <f:form.submit class="btn btn-primary" value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelApproveAll"/>'/>
                 <f:link.action action="filelist" controller="AiImage" class="btn btn-default"><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelDeclineAll"/></f:link.action>
             </f:if>
         </div>
