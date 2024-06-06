@@ -85,6 +85,22 @@ class BaseClient
         return $filePath;
     }
 
+    public function validateApiKey(): bool
+    {
+        try {
+            $this->validateApiCall();
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function validateApiCall(): \stdClass
+    {
+        return new \stdClass();
+    }
+
     protected function getRegistry(): Registry
     {
         return GeneralUtility::makeInstance(Registry::class);

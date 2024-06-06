@@ -11,16 +11,16 @@
 
     <f:flashMessages/>
 
-    <div class="row">
+    <div class="row text-center">
         <f:for each="{files}" as="file">
             <f:if condition="{file.properties.extension} == 'png' || {file.properties.extension} == 'mp4'">
-                <div class="col-sm-6 col-md-4 col-12">
-                    <div class="card" style="width: 18rem;">
-                        <be:link.editRecord uid="{file.uid}}" table="sys_file">
-                            <f:media file="{file}" class="card-img-top" width="300"></f:media>
+                <div class="col-sm-6 col-md-6 col-lg-4 pb-4">
+                    <div class="card">
+                        <be:link.editRecord uid="{file.uid}" table="sys_file">
+                            <f:media file="{file}" width="500c" height="300c"></f:media>
                         </be:link.editRecord>
                         <div class="card-body">
-                            <h5 class="card-title">{file.properties.description}</h5>
+                            <h5 class="card-title" title="{file.properties.description}">{file.properties.description -> f:format.crop(maxCharacters: 40)}</h5>
                             <p class="card-text"></p>
                             <f:if condition="{file.properties.extension} != 'mp4'">
                             <p>{file.properties.width}w x {file.properties.height}h</p>
@@ -30,7 +30,7 @@
                             <p>
                                 <dmk:ifOperationAllowed client="{client}" action="variants">
                                     <f:then>
-                                        <f:link.action action="variants" class="btn btn-default" arguments="{file: file.uid}">
+                                        <f:link.action action="variants" class="btn btn-primary" arguments="{file: file.uid}">
                                             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelButtonGenerateVariants"/>
                                         </f:link.action>
                                     </f:then>
@@ -44,7 +44,7 @@
                             <p>
                                 <dmk:ifOperationAllowed client="{client}" action="upscale">
                                     <f:then>
-                                        <f:link.action action="upscale" class="btn btn-default" arguments="{file: file.uid}">
+                                        <f:link.action action="upscale" class="btn btn-primary" arguments="{file: file.uid}">
                                             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelButtonUpscale"/>
                                         </f:link.action>
                                     </f:then>
@@ -58,7 +58,7 @@
                             <p>
                                 <dmk:ifOperationAllowed client="{client}" action="extend">
                                     <f:then>
-                                        <f:link.action action="cropAndExtend" class="btn btn-default" arguments="{file: file.uid}">
+                                        <f:link.action action="cropAndExtend" class="btn btn-primary" arguments="{file: file.uid}">
                                         <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelButtonExtendImage"/>
                                         </f:link.action>
                                     </f:then>
@@ -72,7 +72,7 @@
                             <p>
                                 <dmk:ifOperationAllowed client="{client}" action="prepareImageToVideo">
                                     <f:then>
-                                        <f:link.action action="prepareImageToVideo" controller="AiVideo" class="btn btn-default" arguments="{file: file.uid}">
+                                        <f:link.action action="prepareImageToVideo" controller="AiVideo" class="btn btn-primary" arguments="{file: file.uid}">
                                             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelImageToVideoGenerating"/>
                                         </f:link.action>
                                     </f:then>

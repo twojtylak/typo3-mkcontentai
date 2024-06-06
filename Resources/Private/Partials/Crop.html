@@ -33,10 +33,10 @@
             <f:render section="extendOptionsSection"/>
         </f:if>
         <f:form.hidden id="clientApi" name="clientApi" value="{clientApi}" />
-        <f:form.hidden id="operationName" name="operationName" value="{operationName}" />
-        <f:form.submit value="Submit" disabled="true"/>
+        <f:form.hidden id="operationName" name="operationName" value="{operationName}" /><br/>
+        <f:form.submit value="Submit" disabled="true" class="btn btn-primary"/>
     </f:form>
-
+<br/>
     <img id="croppedImage" alt="Cropped Image" style="display: none">
 
     <div class="container-fluid">
@@ -45,38 +45,38 @@
 
 <f:section name="extendOptionsSection">
     <div class="form-check">
-        <f:form.radio name="direction" id="directionRight" value="right" checked="checked" />
+        <f:form.radio name="direction" id="directionRight" value="right" checked="checked" class="form-check-input"/>
         <label class="form-check-label" for="directionRight">
             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelRight"/>
         </label>
     </div>
     <div class="form-check">
-        <f:form.radio name="direction" id="directionLeft" value="left" />
+        <f:form.radio name="direction" id="directionLeft" value="left" class="form-check-input"/>
         <label class="form-check-label" for="directionLeft">
             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelLeft"/>
         </label>
     </div>
     <div class="form-check">
-        <f:form.radio name="direction" id="directionTop" value="top" />
+        <f:form.radio name="direction" id="directionTop" value="top" class="form-check-input"/>
         <label class="form-check-label" for="directionTop">
             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelTop"/>
         </label>
     </div>
     <div class="form-check">
-        <f:form.radio name="direction" id="directionBottom" value="bottom" />
+        <f:form.radio name="direction" id="directionBottom" value="bottom" class="form-check-input"/>
         <label class="form-check-label" for="directionBottom">
             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelBottom"/>
         </label>
     </div>
     <div class="form-check">
-        <f:form.radio name="direction" id="directionZoomOut" value="zoomOut" />
+        <f:form.radio name="direction" id="directionZoomOut" value="zoomOut" class="form-check-input"/>
         <label class="form-check-label" for="directionZoomOut">
             <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelZoomOut"/>
         </label>
     </div>
     <div class="form">
         <h2><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelTextExtendImage"/></h2>
-        <f:form.textfield name="promptText" required="false"/>
+        <f:form.textfield name="promptText" required="false" class="form-control"/>
     </div>
 </f:section>
 </html>
