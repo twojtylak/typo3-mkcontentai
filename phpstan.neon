@@ -9,6 +9,7 @@ parameters:
         - "%currentWorkingDirectory%/.Build/vendor/autoload.php"
     excludePaths:
         - %currentWorkingDirectory%/.development
+
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
     ignoreErrors:

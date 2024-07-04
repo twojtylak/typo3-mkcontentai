@@ -8,3 +8,18 @@
     width: inherit;
     height: inherit;
 }
+
+.table>tbody>tr>td
+{
+    text-align: center;
+}
+.table > .thead-blue-custom > tr th {
+    color: white;
+    background-color: #0078e6;
+    text-align: center;
+    width: 70px;
+}
+.no-records
+{
+    text-align: center;
+}

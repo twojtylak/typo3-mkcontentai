@@ -17,24 +17,28 @@ declare(strict_types=1);
 
 namespace DMK\MkContentAi\Service;
 
+use DMK\MkContentAi\Backend\Event\AiAltTextGeneratedEvent;
 use DMK\MkContentAi\DTO\FileAltTextDTO;
 use DMK\MkContentAi\Http\Client\AltTextClient;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Extbase\Domain\Model\File;
 
 class AiAltTextService
 {
     public AltTextClient $altTextClient;
     public FileService $fileService;
+    protected EventDispatcher $eventDispatcher;
     private int $skippedAltTextForFiles = 0;
     private int $failedProcessedImages = 0;
     private int $generatedAltTexts = 0;
     private int $fileIsNotImage = 0;
     private int $hasAltText = 0;
 
-    public function __construct(AltTextClient $altTextClient, FileService $fileService)
+    public function __construct(AltTextClient $altTextClient, FileService $fileService, EventDispatcher $eventDispatcher)
     {
         $this->altTextClient = $altTextClient;
         $this->fileService = $fileService;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -48,8 +52,9 @@ class AiAltTextService
             if (404 != $e->getCode()) {
                 throw $e;
             }
+            $altText = $this->altTextClient->getAltTextForFile($file, $languageIsoCode);
 
-            return $this->altTextClient->getAltTextForFile($file, $languageIsoCode);
+            return $altText;
         }
 
         return $altText;
@@ -126,17 +131,12 @@ class AiAltTextService
             if (null == $fileAltTextDTO->getFile()) {
                 continue;
             }
+            $altText = $fileAltTextDTO->getAltText() ?? '';
             $metadata = $fileAltTextDTO->getFile()->getMetaData();
-            $metadata->offsetSet('alternative', $fileAltTextDTO->getAltText());
+            $metadata->offsetSet('alternative', $altText);
             $metadata->save();
+            $this->processGeneratedAltTextLog('sys_file_metadata', $metadata['uid'], $altText);
         }
-    }
-
-    public function isSupportedImage(string $fileExtension): bool
-    {
-        $supportedFormatsImages = ['jpg', 'png', 'gif', 'webp', 'bmp'];
-
-        return in_array($fileExtension, $supportedFormatsImages);
     }
 
     public function getFailedProcessedImages(): int
@@ -182,5 +182,18 @@ class AiAltTextService
     public function incrementHasAltText(): void
     {
         ++$this->hasAltText;
+    }
+
+    public function processGeneratedAltTextLog(string $tableName, int $resourceUid, string $altText): void
+    {
+        $event = new AiAltTextGeneratedEvent($tableName, $resourceUid, $altText);
+        $this->eventDispatcher->dispatch($event);
+    }
+
+    protected function isSupportedImage(string $fileExtension): bool
+    {
+        $supportedFormatsImages = ['jpg', 'png', 'gif', 'webp', 'bmp'];
+
+        return in_array($fileExtension, $supportedFormatsImages);
     }
 }
