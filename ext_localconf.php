@@ -32,3 +32,9 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1697195476] =
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][TYPO3\CMS\Backend\Form\Element\InputTextElement::class] = [
     'className' => DMK\MkContentAi\Backend\Form\Element\InputTextWithAiAltTextSupportElement::class,
 ];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][TYPO3\CMS\Core\Resource\Event\BeforeFileDeletedEvent::class] = [
+    'className' => DMK\MkContentAi\Backend\EventListener\FileEventListener::class,
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = DMK\MkContentAi\Backend\Hooks\CustomDataHandler::class;

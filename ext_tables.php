@@ -26,6 +26,7 @@ defined('TYPO3') or exit;
             DMK\MkContentAi\Controller\SettingsController::class => 'settings',
             DMK\MkContentAi\Controller\AiTextController::class => 'altText, altTextSave, altTexts, altTextsSave, filelist',
             DMK\MkContentAi\Controller\AiVideoController::class => 'prepareImageToVideo, imageToVideo, filelist, saveFile',
+            DMK\MkContentAi\Controller\AiTextLogsController::class => 'show, redirectToEdit',
         ],
         [
             'access' => 'user,group',
@@ -36,6 +37,9 @@ defined('TYPO3') or exit;
 
     TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_mkcontentai_domain_model_image', 'EXT:mkcontentai/Resources/Private/Language/locallang_csh_tx_mkcontentai_domain_model_image.xlf');
     TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_mkcontentai_domain_model_image');
+
+    TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_mkcontentai_domain_model_alt_text_logs', 'EXT:mkcontentai/Resources/Private/Language/locallang_csh_tx_mkcontentai_domain_model_alt_text_logs.xlf');
+    TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_mkcontentai_domain_model_alt_text_logs');
 })();
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['mkcontentaiSettingsPermissions'] = [

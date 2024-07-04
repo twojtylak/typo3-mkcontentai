@@ -24,6 +24,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\File;
 use TYPO3\CMS\Extbase\Http\ForwardResponse;
@@ -50,6 +51,8 @@ class AiTextController extends BaseController
     {
         $this->aiAltTextService = $aiAltTextService;
         $this->siteLanguageService = $siteLanguageService;
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
     }
 
     public function altTextAction(File $file): ResponseInterface
@@ -84,7 +87,7 @@ class AiTextController extends BaseController
             return $this->handleResponse();
         }
 
-        $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
+        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Mkcontentai/AltText');
 
         $this->view->assignMultiple(
@@ -121,14 +124,15 @@ class AiTextController extends BaseController
 
     public function altTextSaveAction(File $file): ResponseInterface
     {
-        $altText = $this->getAltTextForFile($file);
+        $altText = $this->getAltTextForFile($file) ?? '';
 
         $metadata = $file->getOriginalResource()->getMetaData();
         $metadata->offsetSet('alternative', $altText);
         $metadata->save();
+        $metaDataUid = $file->getOriginalResource()->getMetaData()->get()['uid'];
+        $this->aiAltTextService->processGeneratedAltTextLog('sys_file_metadata', $metaDataUid, $altText);
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $metaDataUid = $file->getOriginalResource()->getMetaData()->get()['uid'];
         $editUrl = $uriBuilder->buildUriFromRoute('record_edit', [
             'edit[sys_file_metadata]['.$metaDataUid.']' => 'edit',
         ]);
