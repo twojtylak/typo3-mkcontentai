@@ -29,6 +29,7 @@ class StableDiffusionAction extends BaseAction
             'img2img' => 'img2img',
             'text2img' => 'text2img',
             'model_list' => 'model_list',
+            'fetch' => 'fetch/',
         ];
     }
 }

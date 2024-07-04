@@ -289,7 +289,7 @@ class StabilityAiClient extends BaseClient implements ImageApiInterface
         }
         $response = json_decode($response);
 
-        if ($response->message && $response->name) {
+        if (isset($response->message) && isset($response->name)) {
             throw new \Exception($response->name.' - '.$response->message);
         }
 

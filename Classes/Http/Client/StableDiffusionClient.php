@@ -40,9 +40,9 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
 
     public function validateApiCall(): \stdClass
     {
-        $response = $this->request($this->stableDiffusionAction->getActions()['system_load']);
+        $response = $this->request($this->stableDiffusionAction->getActions()['model_list'], [], $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
-        $response = $this->validateResponse($response->getContent());
+        $response = $this->convertToStdClass(json_decode($response->getContent()));
 
         return $response;
     }
@@ -61,19 +61,15 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
         }
         $response = json_decode($response);
 
-        if ('processing' == $response->status) {
-            $fetchResult = $response->fetch_result;
-
+        if (isset($response->status) && 'processing' == $response->status) {
             while ('processing' == $response->status) {
-                sleep(2);
-                $response = $this->request('', [], $fetchResult)->getContent();
+                $response = $this->request('', [], $response->fetch_result)->getContent();
                 if (!is_string($response)) {
                     $translatedMessage = LocalizationUtility::translate('labelResponseNotString', 'mkcontentai') ?? '';
 
                     throw new \Exception($translatedMessage);
                 }
                 $response = json_decode($response);
-                sleep(2);
             }
         }
 
@@ -81,7 +77,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
             $response = $this->convertToStdClass($response);
         }
 
-        if (!in_array($response->status, ['ok', 'success']) && !empty($response->status)) {
+        if (!empty($response->status) && !in_array($response->status, ['ok', 'success'])) {
             $this->throwException($response);
         }
 
@@ -263,11 +259,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
         ];
         $response = $this->request('', $params, $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 
-        $response = $this->validateResponse($response->getContent());
-
-        $images = $this->responseToImages($response);
-
-        return $images;
+        return $this->generateImages($response);
     }
 
     /**
@@ -286,13 +278,10 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
             'webhook' => null,
             'track_id' => null,
         ];
+
         $response = $this->request($this->stableDiffusionAction->getActions()['text2img'], $params);
 
-        $response = $this->validateResponse($response->getContent());
-
-        $images = $this->responseToImages($response);
-
-        return $images;
+        return $this->generateImages($response);
     }
 
     /**
@@ -351,5 +340,35 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
     public function getAllowedOperations(): array
     {
         return ['variants', 'filelist', 'saveFile', 'promptResult', 'prompt', 'promptResultAjax'];
+    }
+
+    private function fetchImages(string $responseId): \stdClass
+    {
+        $response = $this->request($this->stableDiffusionAction->getActions()['fetch'].$responseId);
+
+        $response = $this->validateResponse($response->getContent());
+
+        return $response;
+    }
+
+    /**
+     * @return Image[]
+     */
+    private function generateImages(ResponseInterface $response): array
+    {
+        $response = $this->validateResponse($response->getContent());
+
+        $responseId = (string) $response->id;
+        $timer = 0;
+
+        $images = $this->responseToImages($response);
+
+        do {
+            $fetchResponse = $this->fetchImages($responseId);
+            sleep(5);
+            ++$timer;
+        } while ('success' !== $fetchResponse->status && $timer <= 4);
+
+        return $images;
     }
 }
