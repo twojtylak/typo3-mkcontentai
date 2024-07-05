@@ -147,6 +147,12 @@
 			<trans-unit id="labelErrorSavedLanguage" resname="labelErrorSavedLanguage">
             	<source>Issue with saving the language, check your API key.</source>
             </trans-unit>
+			<trans-unit id="labelEuLaw" resname="labelEuLaw">
+            	<source>&#10;Please make sure to use MKContentAI in accordance with applicable laws within your country, e.g. the EU AI Act. %s</source>
+            </trans-unit>
+			<trans-unit id="labelImageSaved" resname="labelImageSaved">
+            	<source>Image generated for text prompt "%s" by %s. Saved at: %s.</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

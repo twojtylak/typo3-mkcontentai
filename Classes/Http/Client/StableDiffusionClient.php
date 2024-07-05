@@ -342,6 +342,11 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
         return ['variants', 'filelist', 'saveFile', 'promptResult', 'prompt', 'promptResultAjax'];
     }
 
+    public function getClientName(): string
+    {
+        return self::CLIENT_NAME[3];
+    }
+
     private function fetchImages(string $responseId): \stdClass
     {
         $response = $this->request($this->stableDiffusionAction->getActions()['fetch'].$responseId);
