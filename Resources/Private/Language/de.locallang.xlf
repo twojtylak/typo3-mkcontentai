@@ -178,6 +178,14 @@
             	<source>Issue with saving the language, check your API key.</source>
             	<target>Problem beim Speichern der Sprache, überprüfen Sie Ihren API-Schlüssel.</target>
             </trans-unit>
+			<trans-unit id="labelEuLaw" resname="labelEuLaw">
+            	<source>&#10;Please make sure to use MKContentAI in accordance with applicable laws within your country, e.g. the EU AI Act. %s</source>
+                <target>&#10;Bitte stellen Sie sicher, dass Sie MKContentAI in Übereinstimmung mit den in Ihrem Land geltenden Gesetzen verwenden, z.B. dem EU AI Act. %s</target>
+            </trans-unit>
+			<trans-unit id="labelImageSaved" resname="labelImageSaved">
+            	<source>Images generated for text prompt "%s" by %s. Saved at: %s.</source>
+            	<target>Bilder für die Texteingabeaufforderung "%s" von %s erzeugt. Gespeichert unter: %s.</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

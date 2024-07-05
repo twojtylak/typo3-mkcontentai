@@ -381,4 +381,9 @@ class StabilityAiClient extends BaseClient implements ImageApiInterface
 
         return [];
     }
+
+    public function getClientName(): string
+    {
+        return self::CLIENT_NAME[2];
+    }
 }
