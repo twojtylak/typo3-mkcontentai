@@ -178,6 +178,23 @@ class FileService
         return $file;
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function getFilePath(string $base64, ?File $file): string
+    {
+        $filePath = '';
+
+        if ($base64) {
+            $filePath = $this->saveTempBase64Image($base64);
+        }
+        if ($file && '' === $filePath) {
+            $filePath = $file->getOriginalResource()->getForLocalProcessing(false);
+        }
+
+        return $filePath;
+    }
+
     private function getStorage(?string $storageIdentifier = null): ResourceStorage
     {
         $storage = (null === $storageIdentifier) ?

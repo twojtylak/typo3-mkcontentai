@@ -139,7 +139,8 @@ class SettingsController extends BaseController
             try {
                 $client->validateApiCall();
             } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR, false);
+                $translatedMessage = (403 === $e->getCode()) ? (LocalizationUtility::translate('labelErrorSavedLanguage', 'mkcontentai') ?? '') : $e->getMessage();
+                $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::ERROR, false);
             }
         }
     }
