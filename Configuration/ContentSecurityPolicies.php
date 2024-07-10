@@ -30,6 +30,7 @@ $externalMediaCollection = new MutationCollection(
         new UriValue('*.stablediffusionapi.com'),
         new UriValue('*.windows.net'),
         new UriValue('*.r2.dev'),
+        new UriValue('*.cloudfront.net')
     ),
 );
 
