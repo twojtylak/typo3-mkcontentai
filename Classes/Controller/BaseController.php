@@ -73,7 +73,7 @@ class BaseController extends ActionController
         $arguments['actionName'] = $this->request->getControllerActionName();
         if (!in_array($arguments['actionName'], $this->client->getAllowedOperations())) {
             $translatedMessage = LocalizationUtility::translate('labelNotAllowed', 'mkcontentai', $arguments) ?? '';
-            $this->addFlashMessage($translatedMessage.' '.get_class($this->client), '', ContextualFeedbackSeverity::ERROR);
+            $this->addFlashMessage($translatedMessage.' '.get_class($this->client), '', ContextualFeedbackSeverity::ERROR, false);
             $this->redirect('filelist');
         }
 

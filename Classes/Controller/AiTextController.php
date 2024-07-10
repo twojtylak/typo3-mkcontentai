@@ -117,7 +117,7 @@ class AiTextController extends BaseController
         $altTexts = $this->getAltTextForFiles($folderName);
         $this->aiAltTextService->saveAltTextsMetaData($altTexts);
         $translatedMessage = LocalizationUtility::translate('labelAlttextsGenerated', 'mkcontentai') ?? '';
-        $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::OK);
+        $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::OK, false);
         $moduleTemplate->assignMultiple(
             [
                 'files' => $altTexts,
@@ -155,9 +155,14 @@ class AiTextController extends BaseController
         try {
             $altTextFromFile = $this->aiAltTextService->getAltText($file);
         } catch (\Exception $e) {
-            (413 === $e->getCode())
-            ? $this->addFlashMessage(LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '', '', ContextualFeedbackSeverity::ERROR)
-            : $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
+            $errorMessage = $e->getMessage();
+            if (413 === $e->getCode()) {
+                $errorMessage = LocalizationUtility::translate('labelErrorImageSize', 'mkcontentai') ?? '';
+            }
+            if (403 === $e->getCode()) {
+                $errorMessage = LocalizationUtility::translate('labelErrorInvalidApiKey', 'mkcontentai', ['AltText']) ?? '';
+            }
+            $this->addFlashMessage($errorMessage, '', ContextualFeedbackSeverity::ERROR, false);
 
             return null;
         }
@@ -174,7 +179,7 @@ class AiTextController extends BaseController
         try {
             $finalFilesWithAltText = $this->aiAltTextService->getMultipleAltTextsForImages($folderName);
         } catch (\Exception $e) {
-            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
+            $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR, false);
         }
 
         return $finalFilesWithAltText;
