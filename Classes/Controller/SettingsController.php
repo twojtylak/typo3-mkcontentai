@@ -107,7 +107,7 @@ class SettingsController extends BaseController
         try {
             $moduleTemplate->assignMultiple(
                 [
-                    'stabeDiffusionModels' => array_merge(
+                    'stableDiffusionModels' => array_merge(
                         [
                             'none' => [
                                 'model_id' => '',
