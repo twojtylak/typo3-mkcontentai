@@ -29,6 +29,9 @@ if (11 == $typo3Version->getMajorVersion()) {
 $GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1697195476] =
     DMK\MkContentAi\ContextMenu\ContentAiItemProvider::class;
 
+$GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1697195577] =
+    DMK\MkContentAi\ContextMenu\ContentAiPageProvider::class;
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][TYPO3\CMS\Backend\Form\Element\InputTextElement::class] = [
     'className' => DMK\MkContentAi\Backend\Form\Element\InputTextWithAiAltTextSupportElement::class,
 ];

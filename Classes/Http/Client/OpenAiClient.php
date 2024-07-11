@@ -122,7 +122,7 @@ class OpenAiClient extends BaseClient implements ImageApiInterface
         return $extendService->getImages($images, $source, $direction);
     }
 
-    public function validateApiCall(): \stdClass
+    public function getTestApiCall(): \stdClass
     {
         $openAi = new OpenAi($this->getApiKey());
 

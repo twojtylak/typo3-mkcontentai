@@ -26,6 +26,7 @@ defined('TYPO3') or exit;
             DMK\MkContentAi\Controller\SettingsController::class => 'settings',
             DMK\MkContentAi\Controller\AiTextController::class => 'altText, altTextSave, altTexts, altTextsSave, filelist',
             DMK\MkContentAi\Controller\AiVideoController::class => 'prepareImageToVideo, imageToVideo, filelist, saveFile',
+            DMK\MkContentAi\Controller\AiTranslationController::class => 'settings, translateContentEasy, translateContentPlain',
             DMK\MkContentAi\Controller\AiTextLogsController::class => 'show, redirectToEdit',
         ],
         [

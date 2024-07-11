@@ -21,6 +21,7 @@ use DMK\MkContentAi\Http\Client\AltTextClient;
 use DMK\MkContentAi\Http\Client\OpenAiClient;
 use DMK\MkContentAi\Http\Client\StabilityAiClient;
 use DMK\MkContentAi\Http\Client\StableDiffusionClient;
+use DMK\MkContentAi\Http\Client\SummAiClient;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AiClientUtility
@@ -43,5 +44,10 @@ class AiClientUtility
     public static function createAltTextClient(): AltTextClient
     {
         return GeneralUtility::makeInstance(AltTextClient::class);
+    }
+
+    public static function createSummAiClient(): SummAiClient
+    {
+        return GeneralUtility::makeInstance(SummAiClient::class);
     }
 }

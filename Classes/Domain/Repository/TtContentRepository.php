@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Copyright notice
  *
@@ -13,11 +15,10 @@
  * of the License, or any later version.
  */
 
-namespace DMK\MkContentAi\Http\Client;
+namespace DMK\MkContentAi\Domain\Repository;
 
-interface ClientInterface
+use TYPO3\CMS\Extbase\Persistence\Repository;
+
+class TtContentRepository extends Repository
 {
-    public function getTestApiCall(): \stdClass;
-
-    public function setApiKey(string $apiKey): void;
 }
