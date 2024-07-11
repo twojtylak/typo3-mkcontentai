@@ -277,6 +277,18 @@
                 <source>First Page</source>
                 <target>Erste Seite</target>
             </trans-unit>
+			<trans-unit id="labelSetEmail" resname="labelSetEmail">
+            	<source>Set email used with SummAI account: </source>
+            	<target>Legen Sie die mit dem SummAI-Konto verwendete E-Mail fest: </target>
+            </trans-unit>
+			<trans-unit id="labelTextTranslateContentEasy" resname="labelTextTranslateContentEasy">
+            	<source>Transform into easy language</source>
+            	<target>In Leichte Sprache transformieren</target>
+            </trans-unit>
+			<trans-unit id="labelTextTranslateContentPlain" resname="labelTextTranslateContentPlain">
+            	<source>Transform into plain language</source>
+            	<target>In Einfache Sprache transformieren</target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

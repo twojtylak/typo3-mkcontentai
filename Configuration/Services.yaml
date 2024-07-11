@@ -76,6 +76,9 @@ services:
     DMK\MkContentAi\Service\AiAltTextService:
         public: true
 
+    DMK\MkContentAi\Service\AiTranslationPageContentService:
+        public: true
+
     DMK\MkContentAi\Http\Client\Action\AltTextAction:
         public: true
 
@@ -84,6 +87,13 @@ services:
             - method: 'injectStabilityAction'
               arguments:
                   $stabilityAiAction: '@DMK\MkContentAi\Http\Client\Action\StabilityAiAction'
+        public: true
+
+    DMK\MkContentAi\Http\Client\SummAiClient:
+        calls:
+            - method: 'injectSummAiAction'
+              arguments:
+                  $summAiAction: '@DMK\MkContentAi\Http\Client\Action\SummAiAction'
         public: true
 
     DMK\MkContentAi\Http\Client\StableDiffusionClient:

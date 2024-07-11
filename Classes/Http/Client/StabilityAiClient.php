@@ -43,7 +43,7 @@ class StabilityAiClient extends BaseClient implements ImageApiInterface
         $this->stabilityAiAction = $stabilityAiAction;
     }
 
-    public function validateApiCall(): \stdClass
+    public function getTestApiCall(): \stdClass
     {
         $headers = [
             'Authorization' => $this->getAuthorizationHeader(),

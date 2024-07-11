@@ -147,6 +147,15 @@
 			<trans-unit id="labelErrorSavedLanguage" resname="labelErrorSavedLanguage">
             	<source>Issue with saving the language, check your API key.</source>
             </trans-unit>
+			<trans-unit id="labelSavedEmail" resname="labelSavedEmail">
+				<source>Email was saved.</source>
+			</trans-unit>
+			<trans-unit id="labelErrorRecordSelected" resname="labelErrorRecordSelected">
+				<source>Error with selected record</source>
+			</trans-unit>
+			<trans-unit id="labelErrorEmail" resname="labelErrorEmail">
+				<source>Incorrect e-mail, please input correct e-mail.</source>
+			</trans-unit>
 			<trans-unit id="labelEuLaw" resname="labelEuLaw">
             	<source>&#10;Please make sure to use MKContentAI in accordance with applicable laws within your country, e.g. the EU AI Act. %s</source>
             </trans-unit>

@@ -16,6 +16,17 @@ declare(strict_types=1);
  */
 
 return [
+    DMK\MkContentAi\Domain\Model\TtContent::class => [
+        'tableName' => 'tt_content',
+        'properties' => [
+            'cType' => [
+                'fieldName' => 'CType',
+            ],
+            'sorting' => [
+                'fieldName' => 'sorting',
+            ],
+        ],
+    ],
     DMK\MkContentAi\Domain\Model\AltTextLog::class => [
         'tableName' => 'tx_mkcontentai_domain_model_alt_text_logs',
         'subclasses' => [

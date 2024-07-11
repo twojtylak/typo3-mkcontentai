@@ -40,6 +40,9 @@ return [
             DMK\MkContentAi\Controller\AiTextLogsController::class => [
                 'show', 'redirectToEdit',
             ],
+            DMK\MkContentAi\Controller\AiTranslationController::class => [
+                'settings', 'translateContentEasy', 'translateContentPlain',
+            ],
         ],
     ],
 ];

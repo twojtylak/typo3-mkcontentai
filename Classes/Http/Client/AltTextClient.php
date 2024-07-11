@@ -149,7 +149,7 @@ class AltTextClient extends BaseClient implements ClientInterface
         return $response;
     }
 
-    public function validateApiCall(): \stdClass
+    public function getTestApiCall(): \stdClass
     {
         $response = $this->getAccount();
 
