@@ -1,12 +1,39 @@
 <html
 xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 data-namespace-typo3-fluid="true">
 
-<div class="mt-2 mx-2">
-<f:link.action action="prompt" controller="AiImage" class="btn btn-default"><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelImageGeneration"/></f:link.action>
-<f:link.action action="filelist" controller="AiImage" class="btn btn-default"><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelFilelist"/></f:link.action>
-<f:link.action action="settings" controller="Settings" class="btn btn-default"><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSettings"/></f:link.action>
-</div>
-<hr>
+<nav class="navbar navbar-expand-lg navbar-light bg-gradient">
+    <div class="container-fluid">
+        <a class="navbar-brand">
+            <div class="custom-icon-container">
+                <core:icon identifier="mkcontentai_full_logo"/>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link">
+                    <f:link.action action="prompt" controller="AiImage" class="btn btn-primary">
+                        <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelImageGeneration"/>
+                    </f:link.action>
+                </a>
+                <a class="nav-link">
+                    <f:link.action action="filelist" controller="AiImage" class="btn btn-primary">
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelFilelist"/>
+                    </f:link.action>
+                </a>
+                <a class="nav-link">
+                    <f:link.action action="settings" controller="Settings" class="btn btn-primary">
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSettings"/>
+                    </f:link.action>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
 </html>

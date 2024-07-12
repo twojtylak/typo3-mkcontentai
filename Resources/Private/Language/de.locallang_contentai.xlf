@@ -197,7 +197,7 @@
                  <source>AI generation of image by text prompt</source>
                  <target>AI-Erzeugung eines Bildes nach einer Textabfrage</target>
             </trans-unit>
-			<trans-unit id="labelFilelist2" resname="labelFilelist2">
+			<trans-unit id="labelFilelistHeader" resname="labelFilelistHeader">
             	<source>Filelist</source>
             	<target>Dateiliste</target>
             </trans-unit>

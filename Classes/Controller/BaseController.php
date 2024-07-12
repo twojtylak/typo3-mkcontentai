@@ -65,7 +65,7 @@ class BaseController extends ActionController
         $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/AltText.js');
         $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/context-menu-actions.js');
         $this->pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/ContextMenu.js');
-
+        $this->pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
         if (isset($client['client'])) {
             $this->client = $client['client'];
         }

@@ -58,6 +58,8 @@ class AiTextController extends BaseController
         parent::__construct($pageRenderer, $moduleTemplateFactory);
         $this->aiAltTextService = $aiAltTextService;
         $this->siteLanguageService = $siteLanguageService;
+        $this->pageRenderer = $pageRenderer;
+        $this->pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
     }
 
     public function altTextAction(File $file): ResponseInterface
