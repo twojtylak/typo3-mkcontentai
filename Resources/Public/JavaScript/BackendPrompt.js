@@ -9,7 +9,7 @@ $(document).ready(function () {
                            <label>Prompt for image generation</label>
                            <input type="text" id="image-input" class="form-control"/>
                        </div>
-                       <button type="button" id="generate-image" class="btn btn-default">
+                       <button type="button" id="generate-image" class="btn btn-primary">
                               <span class="spinner-border spinner-border-sm" style="display: none"></span>
                               Generate images
                         </button>
@@ -94,7 +94,7 @@ $(document).ready(function () {
             let imageBox = `<div class="form-control-wrap">
                                   <img src="${src}" width="256"/>
                                   <div class="form-control-wrap">
-                                    <button type="button" class="btn btn-default save-image" data-src="${imageUrl}">
+                                    <button type="button" class="btn btn-primary save-image" data-src="${imageUrl}">
                                            <span class="spinner-border spinner-border-sm" style="display: none"></span>
                                            Save file and relation
                                     </button>

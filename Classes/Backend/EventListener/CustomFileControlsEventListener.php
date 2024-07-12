@@ -52,7 +52,7 @@ final class CustomFileControlsEventListener
         }
         $iconSize = 'small';
         $translatedMessage = LocalizationUtility::translate('labelAiGenerateText', 'mkcontentai') ?? '';
-        $item = ' <div class="form-control-wrap"><button type="button" class="btn btn-default t3js-prompt" id="prompt">';
+        $item = ' <div class="form-control-wrap"><button type="button" class="btn btn-primary t3js-prompt" id="prompt">';
         $item .= $this->iconFactory->getIcon('actions-image', $iconSize)->render().' ';
         $item .= htmlspecialchars($translatedMessage);
         $item .= '</button></div>';

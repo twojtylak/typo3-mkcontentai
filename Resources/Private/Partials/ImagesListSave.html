@@ -4,16 +4,17 @@
             <div class="card" style="width: 18rem;">
                 <f:if condition="{image.base64}">
                     <f:then>
-                        <img src="data:image/png;base64,{image.base64}" width="300" />
+                        <img src="data:image/png;base64,{image.base64}" width="300"/>
                     </f:then>
                     <f:else>
                         <img src="{image.url}" width="300"/>
                     </f:else>
                 </f:if>
                 <div class="card-body">
-                    <f:link.action action="saveFile" class="btn btn-default"
+                    <f:link.action action="saveFile" class="btn btn-primary"
                                    arguments="{imageUrl: image.url, description: text}">
-                        <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSaveImage"/>
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSaveImage"/>
                     </f:link.action>
                 </div>
             </div>

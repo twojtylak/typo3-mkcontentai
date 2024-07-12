@@ -60,7 +60,7 @@ class ModifyFilelistButtonBarEventListener
                 ->setShowLabelText(true)
                 ->setIcon($icon)
                 ->setHref($url)
-                ->setClasses('btn btn-default');
+                ->setClasses('btn btn-primary');
             $event->setButtons($buttons);
         }
     }

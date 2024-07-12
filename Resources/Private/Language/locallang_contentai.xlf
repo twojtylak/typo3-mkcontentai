@@ -150,7 +150,7 @@
 			<trans-unit id="labelAiGenerateText" resname="labelAiGenerateText">
             	<source>AI generation of image by text prompt</source>
             </trans-unit>
-			<trans-unit id="labelFilelist2" resname="labelFilelist2">
+			<trans-unit id="labelFilelistHeader" resname="labelFilelistHeader">
             	<source>Filelist</source>
             </trans-unit>
 			<trans-unit id="labelContextMenuUpscale" resname="labelContextMenuUpscale">
