@@ -28,6 +28,8 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
 {
     private StableDiffusionAction $stableDiffusionAction;
 
+    protected string $clientName = 'StableDiffusionAI';
+
     public function __construct()
     {
         $this->getApiKey();
@@ -340,11 +342,6 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
     public function getAllowedOperations(): array
     {
         return ['variants', 'filelist', 'saveFile', 'promptResult', 'prompt', 'promptResultAjax'];
-    }
-
-    public function getClientName(): string
-    {
-        return self::CLIENT_NAME[3];
     }
 
     private function fetchImages(string $responseId): \stdClass

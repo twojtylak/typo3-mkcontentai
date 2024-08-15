@@ -24,15 +24,11 @@ class BaseClient
 {
     private const API_KEY = 'apiKey';
 
-    public const CLIENT_NAME = [
-        1 => 'OpenAI',
-        2 => 'StabilityAI',
-        3 => 'StableDifussionAI',
-    ];
+    protected string $clientName = '';
 
     public function getClientName(): string
     {
-        return '';
+        return $this->clientName;
     }
 
     /**
