@@ -52,5 +52,21 @@
         top.TYPO3.Backend.ContentContainer.setUrl($(this).attr('data-navigate-uri'));
     };
 
+    /**
+     * @param {string} table
+     * @param {int} uid of the page
+     */
+    ContextMenu.translateContentEasy = function (table, uid) {
+        top.TYPO3.Backend.ContentContainer.setUrl($(this).attr('data-navigate-uri'));
+    };
+
+    /**
+     * @param {string} table
+     * @param {int} uid of the page
+     */
+    ContextMenu.translateContentPlain = function (table, uid) {
+        top.TYPO3.Backend.ContentContainer.setUrl($(this).attr('data-navigate-uri'));
+    };
+
     return ContextMenu;
 });

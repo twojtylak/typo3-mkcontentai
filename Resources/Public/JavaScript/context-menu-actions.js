@@ -23,6 +23,14 @@ class ContextMenuActions {
     prepareImageToVideo(table, uid, data) {
         top.TYPO3.Backend.ContentContainer.setUrl(data.navigateUri);
     };
+
+    translateContentEasy(table, uid, data) {
+        top.TYPO3.Backend.ContentContainer.setUrl(data.navigateUri);
+    };
+
+    translateContentPlain(table, uid, data) {
+        top.TYPO3.Backend.ContentContainer.setUrl(data.navigateUri);
+    };
 }
 
 export default new ContextMenuActions();

@@ -39,13 +39,18 @@ class SettingsController extends BaseController
     /**
      * Configure settings for various AI engines.
      *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     *
      * @param string               $openAiApiKeyValue     API key for OpenAI client
      * @param array<string, mixed> $stableDiffusionValues Array with specific keys and values
      * @param string               $stabilityAiApiValue   API key for Stability AI client
      * @param string               $altTextAiApiValue     API key for Alt Text AI client
+     * @param string               $summAiApiValue        API key for SummAI client
      * @param int                  $imageAiEngine         Indicator of which AI engine to use for image processing
+     * @param string|null          $summAiUserEmail       Email used with SummAI account
      */
-    public function settingsAction(string $openAiApiKeyValue = '', array $stableDiffusionValues = [], string $stabilityAiApiValue = '', string $altTextAiApiValue = '', int $imageAiEngine = 0): ResponseInterface
+    public function settingsAction(string $openAiApiKeyValue = '', array $stableDiffusionValues = [], string $stabilityAiApiValue = '', string $altTextAiApiValue = '', string $summAiApiValue = '', int $imageAiEngine = 0, ?string $summAiUserEmail = null): ResponseInterface
     {
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
@@ -61,15 +66,18 @@ class SettingsController extends BaseController
 
             return $moduleTemplate->renderResponse('InsufficientPermissions');
         }
-
+        $validateSumAiEmail = 'POST' === $this->request->getMethod();
         $openAi = AiClientUtility::createOpenAiClient();
         $stableDiffusion = AiClientUtility::createStableDiffusionClient();
         $stabilityAi = AiClientUtility::createStabilityAiClient();
         $altTextAi = AiClientUtility::createAltTextClient();
+        $summAi = AiClientUtility::createSummAiClient();
         $this->setApiKey($openAiApiKeyValue, $openAi);
         $this->setApiKey($stableDiffusionValues['api'] ?? '', $stableDiffusion);
         $this->setApiKey($stabilityAiApiValue, $stabilityAi);
         $this->setApiKey($altTextAiApiValue, $altTextAi);
+        $this->setApiKey($summAiApiValue, $summAi);
+        $summAi->setEmail($summAi->checkEmailFromRequest($summAiUserEmail), $validateSumAiEmail);
 
         /** @var SiteLanguageService $siteLanguageService */
         $siteLanguageService = GeneralUtility::makeInstance(SiteLanguageService::class);
@@ -109,6 +117,9 @@ class SettingsController extends BaseController
                 'validateApiKeyStabilityAi' => $stabilityAi->validateApiKey(),
                 'validateApiKeyStableDiffusionAi' => $stableDiffusion->validateApiKey(),
                 'validateApiKeyAltTextAi' => $altTextAi->validateApiKey(),
+                'validateApiKeySummAi' => $summAi->validateApiKey(),
+                'summAiApiValue' => $summAi->getMaskedApiKey(),
+                'summAiUserEmail' => $summAi->getUserEmail(),
             ]
         );
 
@@ -145,7 +156,7 @@ class SettingsController extends BaseController
 
             $this->addFlashMessage($translatedMessage);
             try {
-                $client->validateApiCall();
+                $client->getTestApiCall();
             } catch (\Exception $e) {
                 $translatedMessage = (403 === $e->getCode()) ? (LocalizationUtility::translate('labelErrorSavedLanguage', 'mkcontentai') ?? '') : $e->getMessage();
                 $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::ERROR, false);
@@ -160,7 +171,7 @@ class SettingsController extends BaseController
             $translatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
             $this->addFlashMessage($translatedMessage);
             try {
-                $client->validateApiCall();
+                $client->getTestApiCall();
             } catch (\Exception $e) {
                 $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR, false);
             }

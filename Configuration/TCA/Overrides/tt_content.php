@@ -14,3 +14,4 @@
  */
 
 $GLOBALS['TCA']['tt_content']['columns']['image']['config']['customControls']['addHeader']['userFunc'] = DMK\MkContentAi\User\InlineControl\ImageGenerationButton::class.'->render';
+$GLOBALS['TCA']['tt_content']['columns']['sorting']['config']['type'] = 'passthrough';
