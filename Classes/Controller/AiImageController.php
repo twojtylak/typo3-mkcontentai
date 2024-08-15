@@ -133,6 +133,8 @@ class AiImageController extends BaseController
             [
                 'images' => $images,
                 'text' => $text,
+                'clientApi' => $this->client->getClientName(),
+                'generatedAt' => date('Y-m-d H:i:s'),
             ]
         );
 
@@ -217,7 +219,7 @@ class AiImageController extends BaseController
                 'controllerName' => $this->request->getControllerName(),
                 'withExtend' => true,
                 'promptText' => $promptText,
-                'clientApi' => substr(get_class($this->client), 28),
+                'clientApi' => $this->client->getClientName(),
             ]
         );
 
@@ -229,6 +231,8 @@ class AiImageController extends BaseController
         $fileService = GeneralUtility::makeInstance(FileService::class, $this->client->getFolderName());
         try {
             $fileService->saveFileFromUrl($imageUrl, $description);
+            $translatedMessage = LocalizationUtility::translate('labelImageSaved', 'mkcontentai', [$description, $this->client->getClientName(), date('Y-m-d H:i:s')]) ?? '';
+            $this->addFlashMessage($translatedMessage, '', ContextualFeedbackSeverity::OK);
         } catch (\Exception $e) {
             $this->addFlashMessage($e->getMessage(), '', ContextualFeedbackSeverity::ERROR);
         }

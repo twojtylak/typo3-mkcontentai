@@ -33,6 +33,8 @@ class StabilityAiClient extends BaseClient implements ImageApiInterface
 
     private StabilityAiAction $stabilityAiAction;
 
+    protected string $clientName = 'StabilityAI';
+
     public function __construct()
     {
         $this->client = HttpClient::create();

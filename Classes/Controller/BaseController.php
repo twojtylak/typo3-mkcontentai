@@ -77,9 +77,12 @@ class BaseController extends ActionController
             $this->redirect('filelist');
         }
 
+        $infoMessage2 = LocalizationUtility::translate('labelEuLaw', 'mkcontentai', ['https://artificialintelligenceact.eu/']) ?? '';
+        $formattedMessage = str_replace('&#10;', "\n", $infoMessage2);
+
         $infoMessage = LocalizationUtility::translate('labelEngineInitialized', 'mkcontentai') ?? '';
         if (isset($client['clientClass'])) {
-            $infoMessage .= ' '.$client['clientClass'];
+            $infoMessage .= ' '.$client['clientClass'].'. '.$formattedMessage;
         }
         $this->addFlashMessage(
             $infoMessage,
