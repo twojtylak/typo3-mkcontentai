@@ -50,4 +50,6 @@ interface ImageApiInterface extends ClientInterface
     public function getAvailableResolutions(string $actionName): array;
 
     public function imageToVideo(string $filePath): ?Image;
+
+    public function getClientName(): string;
 }

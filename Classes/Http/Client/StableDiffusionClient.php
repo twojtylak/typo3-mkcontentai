@@ -28,6 +28,8 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
 {
     private StableDiffusionAction $stableDiffusionAction;
 
+    protected string $clientName = 'StableDiffusionAI';
+
     public function __construct()
     {
         $this->getApiKey();

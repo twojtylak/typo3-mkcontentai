@@ -24,6 +24,13 @@ class BaseClient
 {
     private const API_KEY = 'apiKey';
 
+    protected string $clientName = '';
+
+    public function getClientName(): string
+    {
+        return $this->clientName;
+    }
+
     /**
      * @throws \Exception
      */

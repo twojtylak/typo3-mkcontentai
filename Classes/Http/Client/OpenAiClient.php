@@ -25,6 +25,8 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class OpenAiClient extends BaseClient implements ImageApiInterface
 {
+    protected string $clientName = 'OpenAI';
+
     public function __construct()
     {
         $this->getApiKey();

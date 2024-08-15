@@ -82,7 +82,7 @@
             	<source>Prompt action</source>
             </trans-unit>
 			<trans-unit id="labelImageGeneratedForTextPrompt" resname="labelImageGeneratedForTextPrompt">
-            	<source>Images generated for text prompt</source>
+            	<source>Images generated for text prompt "%s" by %s. Created at: %s.</source>
             </trans-unit>
 			<trans-unit id="labelAltTagGeneration" resname="labelAltTagGeneration">
             	<source>AI alt tag generation</source>

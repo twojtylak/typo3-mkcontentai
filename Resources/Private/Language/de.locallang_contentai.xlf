@@ -105,9 +105,9 @@
                  <source>Prompt action</source>
                  <target>Abfragen</target>
             </trans-unit>
-            <trans-unit id="labelImageGeneratedForTextPrompt" resname="labelImageGeneratedForTextPrompt">
-                 <source>Images generated for text prompt</source>
-                 <target>Bilder für Textabfragen generiert</target>
+			<trans-unit id="labelImageGeneratedForTextPrompt" resname="labelImageGeneratedForTextPrompt">
+            	 <source>Images generated for text prompt "%s" by %s. Created at: %s.</source>
+                 <target>Bilder generiert für Textaufforderung "%s" von %s. Erstellt bei: %s.</target>
             </trans-unit>
             <trans-unit id="labelAltTagGeneration" resname="labelAltTagGeneration">
                  <source>AI alt tag generation</source>
