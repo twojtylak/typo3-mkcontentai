@@ -72,3 +72,13 @@ services:
               arguments:
                   $stableDiffusionAction: '@DMK\MkContentAi\Http\Client\Action\StableDiffusionAction'
         public: true
+
+    DMK\MkContentAi\Service\AiTranslationPageContentService:
+        public: true
+
+    DMK\MkContentAi\Http\Client\SummAiClient:
+        calls:
+            - method: 'injectSummAiAction'
+              arguments:
+                  $summAiAction: '@DMK\MkContentAi\Http\Client\Action\SummAiAction'
+        public: true

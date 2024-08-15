@@ -40,7 +40,7 @@ class StableDiffusionClient extends BaseClient implements ImageApiInterface
         $this->stableDiffusionAction = $stableDiffusionAction;
     }
 
-    public function validateApiCall(): \stdClass
+    public function getTestApiCall(): \stdClass
     {
         $response = $this->request($this->stableDiffusionAction->getActions()['model_list'], [], $this->stableDiffusionAction::DREAMBOOTH_API_LINK);
 

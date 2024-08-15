@@ -95,7 +95,7 @@ class BaseClient
     public function validateApiKey(): bool
     {
         try {
-            $this->validateApiCall();
+            $this->getTestApiCall();
 
             return true;
         } catch (\Exception $e) {
@@ -103,7 +103,7 @@ class BaseClient
         }
     }
 
-    public function validateApiCall(): \stdClass
+    public function getTestApiCall(): \stdClass
     {
         return new \stdClass();
     }

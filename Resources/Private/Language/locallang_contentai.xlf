@@ -186,6 +186,15 @@
 			<trans-unit id="labelSaveVideo" resname="labelSaveVideo">
             	<source>Save video</source>
             </trans-unit>
+			<trans-unit id="labelTextTranslateContentEasy" resname="labelTextTranslateContentEasy">
+            	<source>Transform into easy language</source>
+            </trans-unit>
+			<trans-unit id="labelTextTranslateContentPlain" resname="labelTextTranslateContentPlain">
+            	<source>Transform into plain language</source>
+            </trans-unit>
+			<trans-unit id="labelSetEmail" resname="labelSetEmail">
+            	<source>Set email used with SummAI account: </source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

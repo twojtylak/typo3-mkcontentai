@@ -186,6 +186,14 @@
             	<source>Issue with saving the language, check your API key.</source>
             	<target>Problem beim Speichern der Sprache, überprüfen Sie Ihren API-Schlüssel.</target>
             </trans-unit>
+			<trans-unit id="labelErrorRecordSelected" resname="labelErrorRecordSelected">
+				<source>Error with selected record</source>
+				<target>Fehler beim ausgewählten Datensatz</target>
+			</trans-unit>
+			<trans-unit id="labelErrorEmail" resname="labelErrorEmail">
+				<source>Incorrect e-mail, please input correct e-mail.</source>
+				<target>Falsche E-Mail, bitte geben Sie die richtige E-Mail ein.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

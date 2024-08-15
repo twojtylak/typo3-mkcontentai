@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * Copyright notice
  *
@@ -13,11 +15,16 @@
  * of the License, or any later version.
  */
 
-namespace DMK\MkContentAi\Http\Client;
-
-interface ClientInterface
-{
-    public function getTestApiCall(): \stdClass;
-
-    public function setApiKey(string $apiKey): void;
-}
+return [
+    DMK\MkContentAi\Domain\Model\TtContent::class => [
+        'tableName' => 'tt_content',
+        'properties' => [
+            'cType' => [
+                'fieldName' => 'CType',
+            ],
+            'sorting' => [
+                'fieldName' => 'sorting',
+            ],
+        ],
+    ],
+];

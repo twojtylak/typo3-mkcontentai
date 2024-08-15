@@ -223,6 +223,49 @@
                 </div>
             </div>
         </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingSix">
+                <button class="btn btn-primary btn-lg btn-block" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false"
+                        aria-controls="panelsStayOpen-collapseSix">
+                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: validateApiKeySummAi}"/>
+                    SummAI settings
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse"
+                 aria-labelledby="panelsStayOpen-headingSix">
+                <div class="accordion-body">
+                    <f:form action="settings" name="summAi" object="{summAi}">
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
+                        SummAI API
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
+                        : {summAiApiValue}<br/>
+                        <div class="form-group">
+                            <label>
+                                <f:translate
+                                    key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSet"/>
+                                SummAI API
+                                <f:translate
+                                    key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
+                                :</label>
+                            <f:form.textfield class="form-control" name="summAiApiValue"/>
+                            <f:translate
+                                key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
+                            SummAI API email: {summAiUserEmail}<br/>
+                            <label>
+                                <f:translate
+                                    key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSetEmail"/>
+                            </label>
+                            <f:form.textfield class="form-control" name="summAiUserEmail"/>
+                            <br/>
+                            <f:form.submit class="btn btn-primary" value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSubmit"/>'/>
+                        </div>
+                    </f:form>
+                </div>
+            </div>
+        </div>
     </div>
 </f:section>
 </html>
