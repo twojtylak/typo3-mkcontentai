@@ -39,6 +39,9 @@ return [
             DMK\MkContentAi\Controller\AiTextController::class => [
                 'altText', 'altTextSave', 'altTexts', 'altTextsSave',
             ],
+            DMK\MkContentAi\Controller\AiTextLogsController::class => [
+                'show', 'redirectToEdit',
+            ],
             DMK\MkContentAi\Controller\AiTranslationController::class => [
                 'settings', 'translateContentEasy', 'translateContentPlain',
             ],

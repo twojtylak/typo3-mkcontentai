@@ -1,0 +1,94 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+
+<f:section name="Content">
+    <h1>
+        <f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelAltTextsLogs"/>
+    </h1>
+    <f:flashMessages/>
+    <div class="container">
+        <f:if condition="{f:count(subject: '{altTextLogs}')} == 0">
+
+            <div class="no-records">
+                <h1>No records to show</h1>
+                <f:link.action action="show" controller="AiTextLogs" arguments="{page: 1}"
+                               class="btn btn-primary">
+                    <f:translate
+                        key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelFirstPage"/>
+                </f:link.action>
+            </div>
+        </f:if>
+        <br>
+        <div class="table-responsive-md">
+            <table class="table">
+                <thead class="thead-blue-custom">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col"><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelImage"/></th>
+                    <th scope="col">Alternative Text</th>
+                    <th scope="col"><f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelProcessedOn"/></th>
+                </tr>
+                </thead>
+                <tbody>
+                <f:for each="{altTextLogs}" as="altTextLog">
+                    <tr>
+                        <td style=>
+                            <f:link.action
+                                title="{f:translate(key:'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelEditMetadata')}"
+                                action="redirectToEdit" arguments="{metaDataUid: altTextLog.fileMetadataUid}"
+                                controller="AiTextLogs" class="btn btn-primary">
+                                <core:icon identifier="actions-open" size="small"/>
+                                {altTextLog.fileMetadataUid}
+                            </f:link.action>
+                        </td>
+                        <td style="width: 400px; height: 200px; text-align:center; vertical-align:middle">
+                            <f:image src="{altTextLog.fileUrl}" width="300c" height="200c"
+                                     alt="{altTextLog.fileName}" title="{altTextLog.fileName}"/>
+                        </td>
+                        <td style="width: 400px">{altTextLog.alternative}</td>
+                        <td style="width: 150px; text-align:center; vertical-align:middle">
+                            <f:format.date format="d-m-Y H:i:s">{altTextLog.createdAt}</f:format.date>
+                        </td>
+                    </tr>
+                </f:for>
+                </tbody>
+            </table>
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <f:link.action action="show" controller="AiTextLogs"
+                                   arguments="{page: 1}"
+                                   title="{f:translate(key:'LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelFirstPage')}"
+                                   class="page-link">
+                        &laquo;
+                    </f:link.action>
+                </li>
+                <li class="page-item {f:if(condition: previousPage, then: '', else: 'disabled')}">
+                    <f:link.action action="show" controller="AiTextLogs" arguments="{page: previousPage}"
+                                   class="page-link">
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelPreviousPage"/>
+                    </f:link.action>
+                </li>
+                <li class="page-item">
+                    <f:link.action action="show" arguments="{page: currentPage}" controller="AiTextLogs"
+                                   class="page-link active">
+                        {currentPage}
+                    </f:link.action>
+                </li>
+                <li class="page-item {f:if(condition: nextPage, then: '', else: 'disabled')}">
+                    <f:link.action action="show" arguments="{page: nextPage}" controller="AiTextLogs"
+                                   class="page-link">
+                        <f:translate
+                            key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelNextPage"/>
+                    </f:link.action>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</f:section>
+</html>

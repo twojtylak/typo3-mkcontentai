@@ -28,7 +28,8 @@
         "typo3/cms-core": "^12.4 || ^13",
         "orhanerday/open-ai": "^3.5",
         "symfony/http-client": "^5.4",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "typo3/testing-framework": "^6.16 || ^7.0 || ^8.0",
@@ -113,13 +114,9 @@
             ".Build/bin/php-cs-fixer fix -v --dry-run --diff"
         ],
         "test:phpcompatibility": [
-            "@test:phpcompatibility:7.4",
             "@test:phpcompatibility:8.0",
             "@test:phpcompatibility:8.1",
             "@test:phpcompatibility:8.2"
-        ],
-        "test:phpcompatibility:7.4": [
-            ".Build/bin/phpcs --ignore=.Build/*,Resources/Public/* -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 7.4"
         ],
         "test:phpcompatibility:8.0": [
             ".Build/bin/phpcs --ignore=.Build/*,Resources/Public/* -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0"

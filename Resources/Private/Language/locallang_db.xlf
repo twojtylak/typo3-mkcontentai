@@ -6,6 +6,33 @@
 			<trans-unit id="tx_mkcontentai_domain_model_image" resname="tx_mkcontentai_domain_model_image">
 				<source>Image</source>
 			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs" resname="tx_mkcontentai_domain_model_alt_text_logs">
+				<source>AltText Log</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.description" resname="tx_mkcontentai_domain_model_alt_text_logs.description">
+				<source>AltText Log</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.alternative" resname="tx_mkcontentai_domain_model_alt_text_logs.alternative">
+				<source>Alternative</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.alternative.description" resname="tx_mkcontentai_domain_model_alt_text_logs.alternative.description">
+				<source>Alternative</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.uid_sys_file_metadata" resname="tx_mkcontentai_domain_model_alt_text_logs.sys_file_metadata">
+				<source>Uid Sys File Metadata</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.uid_sys_file_metadata.description" resname="tx_mkcontentai_domain_model_alt_text_logs.sys_file_metadata.description">
+				<source>One Image To Many AltTexts</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs" resname="tx_mkcontentai_domain_model_sys_file_metadata">
+				<source>Sys File Metadata</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.description" resname="tx_mkcontentai_domain_model_sys_file_metadata.description">
+				<source>Sys File Metadata</source>
+			</trans-unit>
+			<trans-unit id="tx_mkcontentai_domain_model_alt_text_logs.timestamps" resname="tx_mkcontentai_domain_model_alt_text_logs.timestamps">
+				<source>Timestamps</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

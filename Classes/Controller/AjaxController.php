@@ -145,6 +145,7 @@ class AjaxController extends BaseController
             $metadata = $file->getOriginalResource()->getMetaData();
             $metadata->offsetSet('alternative', $altText);
             $metadata->save();
+            $this->aiAltTextService->processGeneratedAltTextLog('sys_file_metadata', $metadata->get()['uid'], $altText);
         } catch (\Exception $e) {
             $response = $response->withStatus(500)
                 ->withHeader('Content-Type', 'text/plain');
