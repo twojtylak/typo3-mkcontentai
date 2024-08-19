@@ -60,6 +60,10 @@ class AiTextController extends BaseController
         $this->siteLanguageService = $siteLanguageService;
         $this->pageRenderer = $pageRenderer;
         $this->pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
+        $this->pageRenderer = $pageRenderer;
+        $pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/MkContentAi.js');
+        $pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/BackendPrompt.js');
+        $pageRenderer->loadJavaScriptModule('@t3docs/mkcontentai/AltText.js');
     }
 
     public function altTextAction(File $file): ResponseInterface
@@ -133,14 +137,15 @@ class AiTextController extends BaseController
 
     public function altTextSaveAction(File $file): ResponseInterface
     {
-        $altText = $this->getAltTextForFile($file);
-
+        $altText = $this->getAltTextForFile($file) ?? '';
         $metadata = $file->getOriginalResource()->getMetaData();
         $metadata->offsetSet('alternative', $altText);
         $metadata->save();
 
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $metaDataUid = $file->getOriginalResource()->getMetaData()->get()['uid'];
+        $this->aiAltTextService->processGeneratedAltTextLog('sys_file_metadata', $metaDataUid, $altText);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+
         $editUrl = $uriBuilder->buildUriFromRoute('record_edit', [
             'edit[sys_file_metadata]['.$metaDataUid.']' => 'edit',
         ]);

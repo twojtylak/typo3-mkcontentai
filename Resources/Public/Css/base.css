@@ -19,3 +19,14 @@
     max-width: 500px;
     max-height: 400px;
 }
+
+.table > .thead-blue-custom > tr th {
+    color: white;
+    background-color: #0078e6;
+    text-align: center;
+    width: 70px;
+}
+.no-records
+{
+    text-align: center;
+}

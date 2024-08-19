@@ -35,6 +35,21 @@ services:
                 description: 'Generate alt texts in specific directory - example: "1:/mkcontentai/openai"'
                 schedulable: true
 
+    DMK\MkContentAi\Backend\EventListener\AiAltTextGeneratedEventListener:
+        public: true
+        tags:
+            - name: event.listener
+              identifier: 'aiAltTextGenerated'
+              event: DMK\MkContentAi\Backend\Event\AiAltTextGeneratedEvent
+
+    DMK\MkContentAi\Backend\EventListener\FileEventListener:
+        public: true
+        tags:
+            - name: event.listener
+              identifier: 'beforeSysFileDeleted'
+              method: beforeEventDeleted
+              event: TYPO3\CMS\Core\Resource\Event
+
     DMK\MkContentAi\Utility\PermissionsUtility:
         calls:
             - method: 'injectContext'
@@ -49,6 +64,11 @@ services:
         public: true
 
     DMK\MkContentAi\Service\AiAltTextService:
+        public: true
+
+    DMK\MkContentAi\Backend\Hooks\CustomDataHandler:
+        arguments:
+            $altTextLogsService: '@DMK\MkContentAi\Service\AiAltTextLogsService'
         public: true
 
     DMK\MkContentAi\Controller\BaseController:
@@ -72,6 +92,22 @@ services:
               arguments:
                   $stableDiffusionAction: '@DMK\MkContentAi\Http\Client\Action\StableDiffusionAction'
         public: true
+
+    queryBuilder.tx_mkcontentai_domain_model_alt_text_logs:
+        class: 'TYPO3\CMS\Core\Database\Query\QueryBuilder'
+        factory:
+            - '@TYPO3\CMS\Core\Database\ConnectionPool'
+            - 'getQueryBuilderForTable'
+        arguments:
+            - 'tx_mkcontentai_domain_model_alt_text_logs'
+
+    DMK\MkContentAi\Service\AiAltTextLogsService:
+        arguments:
+            $altTextLogsQueryBuilder: '@queryBuilder.tx_mkcontentai_domain_model_alt_text_logs'
+
+    DMK\MkContentAi\Domain\Repository\AltTextLogRepository:
+        arguments:
+            $altTextLogsQueryBuilder: '@queryBuilder.tx_mkcontentai_domain_model_alt_text_logs'
 
     DMK\MkContentAi\Service\AiTranslationPageContentService:
         public: true
