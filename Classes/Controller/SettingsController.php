@@ -15,15 +15,17 @@
 
 namespace DMK\MkContentAi\Controller;
 
+use DMK\MkContentAi\DTO\SettingsDTO;
+use DMK\MkContentAi\DTO\SettingsRequestDTO;
 use DMK\MkContentAi\Http\Client\ClientInterface;
+use DMK\MkContentAi\Http\Client\SummAiClient;
+use DMK\MkContentAi\Service\AiImageService;
 use DMK\MkContentAi\Service\SiteLanguageService;
-use DMK\MkContentAi\Utility\AiClientUtility;
 use DMK\MkContentAi\Utility\PermissionsUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\View\TemplateView;
@@ -31,35 +33,28 @@ use TYPO3\CMS\Fluid\View\TemplateView;
 class SettingsController extends BaseController
 {
     private PermissionsUtility $permissionsUtility;
+    private AiImageService $aiImageService;
 
     public function injectPermissionsUtility(PermissionsUtility $permissionsUtility): void
     {
         $this->permissionsUtility = $permissionsUtility;
     }
 
-    /**
-     * Configure settings for various AI engines.
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     *
-     * @param string               $openAiApiKeyValue     API key for OpenAI client
-     * @param array<string, mixed> $stableDiffusionValues Array with specific keys and values
-     * @param string               $stabilityAiApiValue   API key for Stability AI client
-     * @param string               $altTextAiApiValue     API key for Alt Text AI client
-     * @param string               $summAiApiValue        API key for SummAI client
-     * @param int                  $imageAiEngine         Indicator of which AI engine to use for image processing
-     * @param string|null          $summAiUserEmail       Email used with SummAI account
-     */
-    public function settingsAction(string $openAiApiKeyValue = '', array $stableDiffusionValues = [], string $stabilityAiApiValue = '', string $altTextAiApiValue = '', string $summAiApiValue = '', int $imageAiEngine = 0, ?string $summAiUserEmail = null): ResponseInterface
+    public function injectAiImageService(AiImageService $aiImageService): void
     {
+        $this->aiImageService = $aiImageService;
+    }
+
+    public function settingsAction(?SettingsRequestDTO $settingsRequestDTO = null): ResponseInterface
+    {
+        $settingsRequestDTO = $settingsRequestDTO ?? SettingsRequestDTO::empty();
         $validateSumAiEmail = 'POST' === $this->request->getMethod();
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
-
         $this->moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
         /** @var TemplateView $view */
         $view = $this->view;
+
         if (false === $this->permissionsUtility->userHasAccessToSettings()) {
             $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
             $translatedMessage = LocalizationUtility::translate('labelErrorSettingsPermissions', 'mkcontentai') ?? '';
@@ -69,81 +64,67 @@ class SettingsController extends BaseController
             return $this->htmlResponse($moduleTemplate->renderContent());
         }
 
-        $openAi = AiClientUtility::createOpenAiClient();
-        $stableDiffusion = AiClientUtility::createStableDiffusionClient();
-        $stabilityAi = AiClientUtility::createStabilityAiClient();
-        $altTextAi = AiClientUtility::createAltTextClient();
-        $summAi = AiClientUtility::createSummAiClient();
-        $this->setApiKey($openAiApiKeyValue, $openAi);
-        $this->setApiKey($stableDiffusionValues['api'] ?? '', $stableDiffusion);
-        $this->setApiKey($stabilityAiApiValue, $stabilityAi);
-        $this->setApiKey($altTextAiApiValue, $altTextAi);
-        $this->setApiKey($summAiApiValue, $summAi);
-        $summAi->setEmail($summAi->checkEmailFromRequest($summAiUserEmail), $validateSumAiEmail);
+        $openAi = SettingsDTO::createOpenAiClient($settingsRequestDTO->getOpenAiApiKeyValue());
+        $stabilityAi = SettingsDTO::createStabilityAiClient($settingsRequestDTO->getStabilityAiApiValue());
+        /** @var string $stableDiffusionApiKey */
+        $stableDiffusionApiKey = $settingsRequestDTO->getStableDiffusionAiApiValue();
+        $stableDiffusion = SettingsDTO::createStableDiffusionClient($stableDiffusionApiKey);
+        $altTextAi = SettingsDTO::createAltTextClient($settingsRequestDTO->getAltTextAiApiValue());
+        $summAi = SettingsDTO::createSummAiClient($settingsRequestDTO->getSummAiApiValue(), $settingsRequestDTO->getSummAiUserEmail());
+        /** @var SummAiClient $summAiClient */
+        $summAiClient = $summAi->getClient();
+
+        try {
+            $this->validateApiCalls($openAi, $stabilityAi, $stableDiffusion, $altTextAi, $summAi);
+            $summAiClient->setEmail($summAiClient->checkEmailFromRequest($settingsRequestDTO->getSummAiUserEmail()), $validateSumAiEmail);
+            $modelList = $stableDiffusion->getClient()->modelList();
+        } catch (\Exception $e) {
+            $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
+            $modelList = [];
+        }
+        $this->addMessagesAboutSavedApiKeys($settingsRequestDTO->getOpenAiApiKeyValue(), $settingsRequestDTO->getStabilityAiApiValue(), $stableDiffusionApiKey, $settingsRequestDTO->getAltTextAiApiValue());
 
         /** @var SiteLanguageService $siteLanguageService */
         $siteLanguageService = GeneralUtility::makeInstance(SiteLanguageService::class);
+        $this->aiImageService->setAiImageEngine($settingsRequestDTO->getImageAiEngine() ?? 0);
 
-        if ($imageAiEngine) {
-            $registry = GeneralUtility::makeInstance(Registry::class);
-            $registry->set(AiImageController::class, AiImageController::GENERATOR_ENGINE_KEY, $imageAiEngine);
+        if (!empty($settingsRequestDTO->getSelectedStableDiffusionModel())) {
+            $stableDiffusion->getClient()->setCurrentModel($settingsRequestDTO->getSelectedStableDiffusionModel());
         }
 
-        if ($this->request->hasArgument('stableDiffusionValues')) {
-            $stableDiffusionValues = $this->request->getArgument('stableDiffusionValues');
-            if (is_array($stableDiffusionValues)) {
-                $stableDiffusionModel = $stableDiffusionValues['model'];
-                $stableDiffusion->setCurrentModel($stableDiffusionModel);
-            }
-        }
+        if (!empty($settingsRequestDTO->getSelectedAltTextAiLanguage())) {
+            /** @var ClientInterface $altTextClient */
+            $altTextClient = $altTextAi->getClient();
 
-        if ($this->request->hasArgument('altTextAiLanguage')) {
             /** @var string $altTextAiLanguage */
-            $altTextAiLanguage = $this->request->getArgument('altTextAiLanguage');
-            if (isset($altTextAiLanguage)) {
-                $this->setLanguage($altTextAiLanguage, $altTextAi, $siteLanguageService);
-            }
+            $altTextAiLanguage = $settingsRequestDTO->getSelectedAltTextAiLanguage();
+            $siteLanguageService->setLanguageAltTextWithTestApiCall($altTextAiLanguage, $altTextClient);
         }
-
-        $this->view->assignMultiple(
+        $settingsRequestDTO->setSummAiUserEmail($summAiClient->getUserEmail());
+        $settingsRequestDTO->setImageAiEngine(SettingsController::getImageAiEngine());
+        $settingsRequestDTO->setAltTextAiLanguage($siteLanguageService->getAllAvailableLanguages());
+        $settingsRequestDTO->setSelectedAltTextAiLanguage($siteLanguageService->getLanguage());
+        $settingsRequestDTO->setStableDiffusionValues(array_merge(
             [
-                'openAiApiKey' => $openAi->getMaskedApiKey(),
-                'stableDiffusionApiKey' => $stableDiffusion->getMaskedApiKey(),
-                'stableDiffusionModel' => $stableDiffusion->getCurrentModel(),
-                'stabilityAiApiValue' => $stabilityAi->getMaskedApiKey(),
-                'altTextAiApiValue' => $altTextAi->getMaskedApiKey(),
-                'imageAiEngine' => SettingsController::getImageAiEngine(),
-                'altTextAiLanguage' => $siteLanguageService->getAllAvailableLanguages(),
-                'selectedAltTextAiLanguage' => $siteLanguageService->getLanguage(),
-                'validateApiKeyOpenAi' => $openAi->validateApiKey(),
-                'validateApiKeyStabilityAi' => $stabilityAi->validateApiKey(),
-                'validateApiKeyStableDiffusionAi' => $stableDiffusion->validateApiKey(),
-                'validateApiKeyAltTextAi' => $altTextAi->validateApiKey(),
-                'validateApiKeySummAi' => $summAi->validateApiKey(),
-                'summAiApiValue' => $summAi->getMaskedApiKey(),
-                'summAiUserEmail' => $summAi->getUserEmail(),
-            ]
-        );
-
+                'none' => ['model_id' => ''],
+            ], $modelList));
         try {
             $this->view->assignMultiple(
                 [
-                    'stableDiffusionModels' => array_merge(
-                        [
-                            'none' => [
-                                'model_id' => '',
-                            ],
-                        ],
-                        $stableDiffusion->modelList()
-                    ),
+                    'openAi' => $openAi,
+                    'stableDiffusion' => $stableDiffusion,
+                    'stabilityAi' => $stabilityAi,
+                    'altTextAi' => $altTextAi,
+                    'summAi' => $summAi,
+                    'settingsRequestDTO' => $settingsRequestDTO,
                 ]
             );
         } catch (\Exception $e) {
             $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
         }
+
         if (null === $this->moduleTemplateFactory) {
             $translatedMessage = LocalizationUtility::translate('labelErrorModuleTemplateFactory', 'mkcontentai') ?? '';
-
             throw new \Exception($translatedMessage, 1623345720);
         }
 
@@ -153,46 +134,47 @@ class SettingsController extends BaseController
         return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
-    private function setLanguage(string $language, ClientInterface $client, SiteLanguageService $siteLanguageService): void
-    {
-        if ($language) {
-            $siteLanguageService->setLanguage($language);
-            $translatedMessage = LocalizationUtility::translate('labelSavedLanguage', 'mkcontentai') ?? '';
-
-            $this->addFlashMessage($translatedMessage);
-            try {
-                $client->getTestApiCall();
-            } catch (\Exception $e) {
-                (403 === $e->getCode()) ?
-                    $translatedMessage = LocalizationUtility::translate('labelErrorSavedLanguage', 'mkcontentai') ?? '' :
-                    $translatedMessage = $e->getMessage();
-                $this->addFlashMessage($translatedMessage, '', AbstractMessage::ERROR, false);
-            }
-        }
-    }
-
-    private function setApiKey(string $key, ClientInterface $client): void
-    {
-        if ($key) {
-            $client->setApiKey($key);
-            $translatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
-            $this->addFlashMessage($translatedMessage);
-            try {
-                $client->getTestApiCall();
-            } catch (\Exception $e) {
-                $this->addFlashMessage($e->getMessage(), '', AbstractMessage::ERROR, false);
-            }
-        }
-    }
-
     public static function getImageAiEngine(): int
     {
-        $registry = GeneralUtility::makeInstance(Registry::class);
+        $registry = self::getRegistry();
         $imageEngineKey = intval($registry->get(AiImageController::class, AiImageController::GENERATOR_ENGINE_KEY));
         if (!array_key_exists($imageEngineKey, AiImageController::GENERATOR_ENGINE)) {
             $imageEngineKey = array_key_first(AiImageController::GENERATOR_ENGINE);
         }
 
         return $imageEngineKey;
+    }
+
+    protected function addMessageAboutSavedApiKey(?string $key): void
+    {
+        if ('' === $key || null === $key) {
+            return;
+        }
+
+        $translatedMessage = LocalizationUtility::translate('labelSavedKey', 'mkcontentai') ?? '';
+        $this->addFlashMessage($translatedMessage);
+    }
+
+    private function addMessagesAboutSavedApiKeys(?string $openAiApiKeyValue, ?string $stabilityAiApiValue, ?string $stableDiffusionApiKey, ?string $altTextAiApiValue): void
+    {
+        foreach (
+            [
+                $openAiApiKeyValue,
+                $stabilityAiApiValue,
+                $stableDiffusionApiKey,
+                $altTextAiApiValue,
+            ] as $apiKey
+        ) {
+            $this->addMessageAboutSavedApiKey($apiKey);
+        }
+    }
+
+    private function validateApiCalls(SettingsDTO $openAi, SettingsDTO $stabilityAi, SettingsDTO $stableDiffusion, SettingsDTO $altTextAi, SettingsDTO $summAi): void
+    {
+        $openAi->validateClientApiKey();
+        $stabilityAi->validateClientApiKey();
+        $stableDiffusion->validateClientApiKey();
+        $altTextAi->validateClientApiKey();
+        $summAi->validateClientApiKey();
     }
 }

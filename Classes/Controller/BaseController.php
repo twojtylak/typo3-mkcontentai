@@ -22,6 +22,7 @@ use DMK\MkContentAi\Http\Client\StableDiffusionClient;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -126,5 +127,10 @@ class BaseController extends ActionController
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    protected static function getRegistry(): Registry
+    {
+        return GeneralUtility::makeInstance(Registry::class);
     }
 }

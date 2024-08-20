@@ -25,19 +25,19 @@
             <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
                  aria-labelledby="panelsStayOpen-headingOne">
                 <div class="accordion-body">
-                    <f:form action="settings" name="openAi" object="{openAi}">
+                    <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <div class="form-check">
-                            <f:form.radio name="imageAiEngine" checked="{imageAiEngine} == 1" value="1"
+                            <f:form.radio property="imageAiEngine" checked="{settingsRequestDTO.imageAiEngine} == 1" value="1"
                                           class="form-check-input"/>
                             <label class="form-check-label">OpenAI (https://openai.com/)</label>
                         </div>
                         <div class="form-check">
-                            <f:form.radio name="imageAiEngine" checked="{imageAiEngine} == 2" value="2"
+                            <f:form.radio property="imageAiEngine" checked="{settingsRequestDTO.imageAiEngine} == 2" value="2"
                                           class="form-check-input"/>
                             <label class="form-check-label">Stable Diffusion (https://stablediffusionapi.com/)</label>
                         </div>
                         <div class="form-check">
-                            <f:form.radio name="imageAiEngine" checked="{imageAiEngine} == 3" value="3"
+                            <f:form.radio property="imageAiEngine" checked="{settingsRequestDTO.imageAiEngine} == 3" value="3"
                                           class="form-check-input"/>
                             <label class="form-check-label">StabilityAI (https://stability.ai/)</label>
                         </div>
@@ -54,20 +54,20 @@
                 <button class="btn btn-primary btn-lg btn-block" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
                         aria-controls="panelsStayOpen-collapseTwo">
-                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: validateApiKeyOpenAi}"/>
+                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: openAi.validatedApiKey}"/>
                     OpenAI settings
                 </button>
             </h2>
             <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse"
                  aria-labelledby="panelsStayOpen-headingTwo">
                 <div class="accordion-body">
-                    <f:form action="settings" name="openAi" object="{openAi}">
+                    <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
                         OpenAI API
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
-                        : {openAiApiKey}<br/>
+                        : {openAi.maskedApiKey}<br/>
                         <div class="form-group">
                             <label>
                                 <f:translate
@@ -76,7 +76,7 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
                                 :</label>
-                            <f:form.textfield class="form-control" name="openAiApiKeyValue"/>
+                            <f:form.textfield class="form-control" property="openAiApiKeyValue" value=""/>
                             <br/>
                             <f:form.submit class="btn btn-primary"
                                            value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSubmit"/>'/>
@@ -90,20 +90,20 @@
                 <button class="btn btn-primary btn-lg btn-block" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false"
                         aria-controls="panelsStayOpen-collapseThree">
-                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: validateApiKeyStableDiffusionAi}"/>
+                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: stableDiffusion.validatedApiKey}"/>
                     Stable Diffusion settings
                 </button>
             </h2>
             <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse"
                  aria-labelledby="panelsStayOpen-headingThree">
                 <div class="accordion-body">
-                    <f:form action="settings" name="stableDiffusionValues" object="{stableDiffusionValues}">
+                    <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
                         Stable Diffusion API
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
-                        : {stableDiffusionApiKey}<br/>
+                        : {stableDiffusion.maskedApiKey}<br/>
                         <div class="form-group">
                             <label>
                                 <f:translate
@@ -112,14 +112,14 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
                                 :</label>
-                            <f:form.textfield class="form-control" name="stableDiffusionValues[api]"/>
+                            <f:form.textfield class="form-control" property="stableDiffusionAiApiValue" value=""/>
                             <br/>
                             <f:translate
                                 key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyUsedModel"/>
                             (https://stablediffusionapi.com/models):
-                            <f:if condition="{stableDiffusionModel}">
+                            <f:if condition="{stableDiffusion.client.currentModel}">
                                 <f:then>
-                                    {stableDiffusionModel} <i class="bi bi-trash"></i>
+                                    {stableDiffusion.client.currentModel} <i class="bi bi-trash"></i>
                                 </f:then>
                                 <f:else>
                                     <f:translate
@@ -131,8 +131,9 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSetCustomModelToUse"/>
                                 :</label></br>
-                            <f:form.select name="stableDiffusionValues[model]" options="{stableDiffusionModels}"
+                            <f:form.select property="selectedSdModel" options="{settingsRequestDTO.stableDiffusionValues}"
                                            optionValueField="model_id"
+                                           value="{stableDiffusion.client.currentModel}"
                                            optionLabelField="model_id" class="form-select"/>
                             <br/><br/>
                             <f:form.submit class="btn btn-primary"
@@ -147,20 +148,20 @@
                 <button class="btn btn-primary btn-lg btn-block" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false"
                         aria-controls="panelsStayOpen-collapseFour">
-                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: validateApiKeyStabilityAi}"/>
+                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: stabilityAi.validatedApiKey}"/>
                     StabilityAI settings
                 </button>
             </h2>
             <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse"
                  aria-labelledby="panelsStayOpen-headingFour">
                 <div class="accordion-body">
-                    <f:form action="settings" name="stabiltiyAi" object="{stabiltiyAi}">
+                    <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
                         StabilityAI API
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
-                        : {stabilityAiApiValue}<br/>
+                        : {stabilityAi.maskedApiKey}<br/>
                         <div class="form-group">
                             <label>
                                 <f:translate
@@ -169,7 +170,7 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
                                 :</label>
-                            <f:form.textfield class="form-control" name="stabilityAiApiValue"/>
+                            <f:form.textfield class="form-control" property="stabilityAiApiValue" value=""/>
                             <br/>
                             <f:form.submit class="btn btn-primary"
                                            value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSubmit"/>'/>
@@ -183,20 +184,20 @@
                 <button class="btn btn-primary btn-lg btn-block" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false"
                         aria-controls="panelsStayOpen-collapseFive">
-                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: validateApiKeyAltTextAi}"/>
+                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: altTextAi.validatedApiKey}"/>
                     AltText settings
                 </button>
             </h2>
             <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse"
                  aria-labelledby="panelsStayOpen-headingFive">
                 <div class="accordion-body">
-                    <f:form action="settings" name="altTextAi" object="{altTextAi}">
+                    <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
                         AltText AI API
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
-                        (alttext.ai): {altTextAiApiValue}<br/>
+                        (alttext.ai): {altTextAi.maskedApiKey}<br/>
                         <div class="form-group">
                             <label>
                                 <f:translate
@@ -205,7 +206,7 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
                                 :</label>
-                            <f:form.textfield class="form-control" name="altTextAiApiValue"/>
+                            <f:form.textfield class="form-control" property="altTextAiApiValue" value=""/>
                             <label>
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSet"/>
@@ -213,8 +214,8 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelLanguageValue"/>
                                 :</label>
-                            <f:form.select name="altTextAiLanguage" options="{altTextAiLanguage}"
-                                           value="{selectedAltTextAiLanguage}" class="form-select"/>
+                            <f:form.select property="selectedAltTextAiLanguage" options="{settingsRequestDTO.altTextAiLanguage}"
+                                           value="{settingsRequestDTO.selectedAltTextAiLanguage}" class="form-select"/>
                             <br/><br/>
                             <f:form.submit class="btn btn-primary"
                                            value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSubmit"/>'/>
@@ -228,20 +229,20 @@
                 <button class="btn btn-primary btn-lg btn-block" type="button" data-bs-toggle="collapse"
                         data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false"
                         aria-controls="panelsStayOpen-collapseSix">
-                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: validateApiKeySummAi}"/>
+                    <f:render partial="ApiStatus" arguments="{validatedApiResponse: summAi.validatedApiKey}"/>
                     SummAI settings
                 </button>
             </h2>
             <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse"
                  aria-labelledby="panelsStayOpen-headingSix">
                 <div class="accordion-body">
-                    <f:form action="settings" name="summAi" object="{summAi}">
+                    <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
                         SummAI API
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
-                        : {summAiApiValue}<br/>
+                        : {summAi.maskedApiKey}<br/>
                         <div class="form-group">
                             <label>
                                 <f:translate
@@ -250,15 +251,15 @@
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
                                 :</label>
-                            <f:form.textfield class="form-control" name="summAiApiValue"/>
+                            <f:form.textfield class="form-control" property="summAiApiValue" value=""/>
                             <f:translate
                                 key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
-                            SummAI API email: {summAiUserEmail}<br/>
+                            SummAI API email: {settingsRequestDTO.summAiUserEmail}<br/>
                             <label>
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSetEmail"/>
                             </label>
-                            <f:form.textfield class="form-control" name="summAiUserEmail"/>
+                            <f:form.textfield class="form-control" property="summAiUserEmail" value=""/>
                             <br/>
                             <f:form.submit class="btn btn-primary" value='<f:translate key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSubmit"/>'/>
                         </div>

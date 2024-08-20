@@ -17,9 +17,13 @@ declare(strict_types=1);
 
 namespace DMK\MkContentAi\Service;
 
+use DMK\MkContentAi\Http\Client\ClientInterface;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class SiteLanguageService
 {
@@ -105,5 +109,35 @@ class SiteLanguageService
         }
 
         return null;
+    }
+
+    public function setLanguageAltTextWithTestApiCall(string $language, ClientInterface $client): void
+    {
+        if ($language) {
+            $this->setLanguage($language);
+            try {
+                $client->getTestApiCall();
+            } catch (\Exception $e) {
+                (403 === $e->getCode()) ?
+                    $translatedMessage = LocalizationUtility::translate('labelErrorSavedLanguage', 'mkcontentai') ?? '' :
+                    $translatedMessage = $e->getMessage();
+                $this->sendFlashMessage($translatedMessage);
+            }
+        }
+    }
+
+    public function sendFlashMessage(string $message): void
+    {
+        $message = GeneralUtility::makeInstance(
+            FlashMessage::class,
+            $message,
+            '',
+            FlashMessage::ERROR,
+            true
+        );
+        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+
+        $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
+        $messageQueue->addMessage($message);
     }
 }

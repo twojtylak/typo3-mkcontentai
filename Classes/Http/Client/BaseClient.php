@@ -117,4 +117,17 @@ class BaseClient
     {
         return get_class($this);
     }
+
+    public function setCurrentModel(?string $modelName = null): void
+    {
+        $modelName = null;
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function modelList(): array
+    {
+        return [];
+    }
 }

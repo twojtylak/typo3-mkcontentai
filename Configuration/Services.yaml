@@ -102,3 +102,10 @@ services:
               arguments:
                   $stableDiffusionAction: '@DMK\MkContentAi\Http\Client\Action\StableDiffusionAction'
         public: true
+
+    DMK\MkContentAi\Controller\SettingsController:
+        calls:
+            - method: 'injectAiImageService'
+              arguments:
+                  $aiImageService: '@DMK\MkContentAi\Service\AiImageService'
+        public: true
