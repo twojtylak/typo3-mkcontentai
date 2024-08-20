@@ -42,6 +42,10 @@ A batch command feature enables processing all images in a given folder either b
 ### Image to video generation
 Image to video currently works only with StabilityAI. This functionality introduces the ability to create a video from provided image.
 
+### SUMM AI API integration
+SUMM AI is a tool designed to improve accessibility by transforming complex texts into both Leichte Sprache (Easy Language) and Plain Language. These formats are tailored to make content more accessible, ensuring that it can be easily understood by a broader audience, including individuals with cognitive disabilities or those who may struggle with reading comprehension.
+The SUMM AI API is now implemented and ready to transform content using tt_content texts within the MKContentAI extension.
+
 ### Settings
 The "Settings" section allows you to configure the AI platforms and APIs that the extension should use, as well as additional options for Stable Diffusion. Specifically, in the "Settings" section, you can:
 
@@ -56,6 +60,7 @@ These settings can be adjusted according to your preferences and needs. It's imp
 
 ## Changelog
 
+- 13.0.0: Compatibility with TYPO3 v13, improved GUI, added alt-texts logs and security layer in the European Union, improved messages related with generate image operations
 - 12.1.2: Crop and extend image with prompt field in StabilityAI, image to video in StabilityAI, ACL for tt_content: media field
 - 12.1.1: Batch generation of alt texts, ACL for settings tab, Small bugfixes - alt-text generation failed for big images, adjust actions available via context menu on filelist, multiple images generation in tt_content
 - 12.1.0: Added automatic alt text generation functionality (alttext.ai API), refactor of translations (English/German) - move to xlf files
