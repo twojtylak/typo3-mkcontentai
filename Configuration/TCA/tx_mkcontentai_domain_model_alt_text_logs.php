@@ -24,6 +24,7 @@ return [
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'delete' => 'deleted',
+        'hideTable' => true,
     ],
     'columns' => [
         'pid' => [
