@@ -108,6 +108,19 @@ class BaseClient
         return new \stdClass();
     }
 
+    public function setCurrentModel(?string $modelName = null): void
+    {
+        $modelName = null;
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function modelList(): array
+    {
+        return [];
+    }
+
     protected function getRegistry(): Registry
     {
         return GeneralUtility::makeInstance(Registry::class);

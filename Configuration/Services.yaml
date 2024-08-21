@@ -118,3 +118,10 @@ services:
               arguments:
                   $summAiAction: '@DMK\MkContentAi\Http\Client\Action\SummAiAction'
         public: true
+
+    DMK\MkContentAi\Controller\SettingsController:
+        calls:
+            - method: 'injectAiImageService'
+              arguments:
+                  $aiImageService: '@DMK\MkContentAi\Service\AiImageService'
+        public: true
