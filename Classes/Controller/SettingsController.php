@@ -48,7 +48,7 @@ class SettingsController extends BaseController
     public function settingsAction(?SettingsRequestDTO $settingsRequestDTO = null): ResponseInterface
     {
         $settingsRequestDTO = $settingsRequestDTO ?? SettingsRequestDTO::empty();
-        $validateSumAiEmail = 'POST' === $this->request->getMethod();
+        $validateSumAiEmail = 'POST' === $this->request->getMethod() && !empty($settingsRequestDTO->getSummAiUserEmail());
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addCssFile('EXT:mkcontentai/Resources/Public/Css/base.css');
         $this->moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
