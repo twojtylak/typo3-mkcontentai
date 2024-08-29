@@ -278,8 +278,8 @@
                 <target>Erste Seite</target>
             </trans-unit>
 			<trans-unit id="labelSetEmail" resname="labelSetEmail">
-            	<source>Set email used with SummAI account: </source>
-            	<target>Legen Sie die mit dem SummAI-Konto verwendete E-Mail fest: </target>
+            	<source>Set email used with SUMM AI account: </source>
+            	<target>Legen Sie die mit dem SUMM AI-Konto verwendete E-Mail fest: </target>
             </trans-unit>
 			<trans-unit id="labelTextTranslateContentEasy" resname="labelTextTranslateContentEasy">
             	<source>Transform into easy language</source>
