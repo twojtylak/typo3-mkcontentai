@@ -230,7 +230,7 @@
                         data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false"
                         aria-controls="panelsStayOpen-collapseSix">
                     <f:render partial="ApiStatus" arguments="{validatedApiResponse: summAi.validatedApiKey}"/>
-                    SummAI settings
+                    SUMM AI settings
                 </button>
             </h2>
             <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse"
@@ -239,7 +239,7 @@
                     <f:form action="settings" name="settingsRequestDTO" object="{settingsRequestDTO}">
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
-                        SummAI API
+                        SUMM AI API
                         <f:translate
                             key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKey"/>
                         : {summAi.maskedApiKey}<br/>
@@ -247,14 +247,14 @@
                             <label>
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSet"/>
-                                SummAI API
+                                SUMM AI API
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelKeyValue"/>
                                 :</label>
                             <f:form.textfield class="form-control" property="summAiApiValue" value=""/>
                             <f:translate
                                 key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelCurrentlyStored"/>
-                            SummAI API email: {settingsRequestDTO.summAiUserEmail}<br/>
+                            SUMM AI API email: {settingsRequestDTO.summAiUserEmail}<br/>
                             <label>
                                 <f:translate
                                     key="LLL:EXT:mkcontentai/Resources/Private/Language/locallang_contentai.xlf:labelSetEmail"/>
