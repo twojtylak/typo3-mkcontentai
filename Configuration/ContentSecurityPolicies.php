@@ -32,6 +32,11 @@ $externalMediaCollection = new MutationCollection(
         new UriValue('*.r2.dev'),
         new UriValue('*.cloudfront.net')
     ),
+    new Mutation(
+        MutationMode::Extend,
+        Directive::MediaSrc,
+        TYPO3\CMS\Core\Security\ContentSecurityPolicy\SourceScheme::data,
+    ),
 );
 
 return Map::fromEntries(
