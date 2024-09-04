@@ -21,54 +21,17 @@ define(['jquery', 'cropper'], function ($, Cropper) {
         });
 
         const image = document.getElementById('image');
-        const action = document.getElementById('operationName').value;
-        const client = document.getElementById("clientApi").value;
         const submitButton = document.querySelector('input[type="submit"]');
-        let customHeight = 256;
-        let customWidth = 256;
         let dragModeValue = 'none';
         let viewModeValue = 1;
-        let cropBoxResizable = false;
+        let cropBoxResizable = true;
         let aspectRatio = 1;
         let scalable = false;
         let autoCropArea = 0;
-        let zoomable = false;
+        let zoomable = true;
+        let customWidth = image.width;
+        let customHeight = image.height;
         submitButton.disabled = false;
-
-        if (client === "StabilityAiClient" && action === 'extend') {
-            customHeight = image.height;
-            customWidth = image.width;
-            dragModeValue = 'crop';
-            cropBoxResizable = true;
-            aspectRatio = NaN;
-        }
-
-        if (client === "StabilityAiClient" && action === 'prepareImageToVideo') {
-            aspectRatio = NaN;
-            customWidth = document.querySelector('input[name="size"]').getAttribute('data-width') ?? 768;
-            customHeight = document.querySelector('input[name="size"]').getAttribute('data-height') ?? 768;
-
-            const inputs = document.querySelectorAll('input[name="size"]');
-            let disabledInputsCount = 0;
-
-            for (let i = 0; element = inputs[i]; i++) {
-                element.disabled = false;
-
-                if (false === validateImageDimensionsData(image.width, image.height, element.getAttribute('data-width'), element.getAttribute('data-height'))) {
-                    element.disabled = true;
-                    customWidth = 0;
-                    customHeight = 0;
-                    disabledInputsCount++;
-                }
-            }
-
-            if (inputs.length === disabledInputsCount) {
-                submitButton.disabled = true;
-            }
-
-            customWidth = parseInt(customWidth, 10);
-            customHeight = parseInt(customHeight, 10);
-        }
 
         const cropper = new Cropper(image, {
             aspectRatio: aspectRatio,
@@ -78,32 +41,28 @@ define(['jquery', 'cropper'], function ($, Cropper) {
             viewMode: viewModeValue,
             scalable: scalable,
             autoCropArea: autoCropArea,
-            data: {
-                width: customWidth,
-                height: customHeight
-            },
             crop(event) {
             },
             ready: function () {
-                let naturalWidth = this.cropper.getImageData().naturalWidth;
-                let naturalHeight = this.cropper.getImageData().naturalHeight;
-                if (naturalHeight >= 256 && naturalWidth >= 256) {
-                    this.cropper.setCanvasData({
-                        left: 0,
-                        top: 0,
-                        width: naturalWidth,
-                        height: naturalHeight
-                    });
-                }
                 if (document.querySelector('input[name="size"]')) {
                     document.querySelector('input[name="size"]').click();
                 }
             }
         });
 
-        $('.crop-form').on('submit', function(event) {
-            event.preventDefault();
+        function updateAspectRatio() {
+            customWidth = document.querySelector('input[name="size"]:checked').getAttribute('data-width');
+            customHeight = document.querySelector('input[name="size"]:checked').getAttribute('data-height');
+            aspectRatio = customWidth / customHeight;
+            cropper.setAspectRatio(aspectRatio);
+        }
 
+        document.querySelectorAll('input[name="size"]').forEach(function (element) {
+            element.addEventListener('change', updateAspectRatio);
+        });
+
+        $('.crop-form').on('submit', function (event) {
+            event.preventDefault();
             let minHeight;
             let minWidth;
 
@@ -114,9 +73,10 @@ define(['jquery', 'cropper'], function ($, Cropper) {
                 minHeight = parseInt(minHeight, 10);
             }
 
-            let canvas = cropper.getCroppedCanvas({
-                    minWidth: minWidth,
-                    minHeight: minHeight
+            let canvas;
+            canvas = cropper.getCroppedCanvas({
+                    width: minWidth,
+                    height: minHeight
                 }
             );
 
@@ -139,11 +99,5 @@ define(['jquery', 'cropper'], function ($, Cropper) {
                 }
             }
         });
-
-        function validateImageDimensionsData(imageWidth, imageHeight, inputWidth, inputHeight) {
-            if (imageWidth < inputWidth || imageHeight < inputHeight) {
-                return false;
-            }
-        }
     });
 });
