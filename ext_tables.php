@@ -27,10 +27,6 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['mkcontentaiSettingsPermi
     ],
 ];
 
-$GLOBALS['TCA']['tx_mkcontentai_domain_model_image']['ctrl']['security']['ignorePageTypeRestriction'] = [
-    'EXT:mkcontentai/Resources/Private/Language/locallang_csh_tx_mkcontentai_domain_model_image.xlf',
-];
-
 $GLOBALS['TCA']['tx_mkcontentai_domain_model_alt_text_logs']['ctrl']['security']['ignorePageTypeRestriction'] = [
     'EXT:mkcontentai/Resources/Private/Language/locallang_csh_tx_mkcontentai_domain_model_alt_text_logs.xlf',
 ];
