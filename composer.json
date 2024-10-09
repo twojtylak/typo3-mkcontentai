@@ -93,7 +93,10 @@
             "@test"
         ],
         "lint:php": [
-            ".Build/bin/parallel-lint ./Classes"
+            "echo 'parallel-lint fails with a exception if executed inside the vendor/dmk/mkcontentai folder'",
+            "[ -e ../../autoload.php ] && mv ../../autoload.php ../../autoload.php.bak",
+            ".Build/bin/parallel-lint ./Classes",
+            "[ -e ../../autoload.php.bak ] && mv ../../autoload.php.bak ../../autoload.php"
         ],
         "lint:yaml": [
             ".Build/bin/yaml-lint --ansi -n -v ./Configuration ./Resources"
@@ -116,7 +119,8 @@
         "test:phpcompatibility": [
             "@test:phpcompatibility:8.0",
             "@test:phpcompatibility:8.1",
-            "@test:phpcompatibility:8.2"
+            "@test:phpcompatibility:8.2",
+            "@test:phpcompatibility:8.3"
         ],
         "test:phpcompatibility:8.0": [
             ".Build/bin/phpcs --ignore=.Build/*,Resources/Public/* -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.0"
@@ -126,6 +130,9 @@
         ],
         "test:phpcompatibility:8.2": [
             ".Build/bin/phpcs --ignore=.Build/*,Resources/Public/* -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.2"
+        ],
+        "test:phpcompatibility:8.3": [
+            ".Build/bin/phpcs --ignore=.Build/*,Resources/Public/* -p . --standard=.Build/vendor/phpcompatibility/php-compatibility/PHPCompatibility --runtime-set testVersion 8.3"
         ],
         "test:phpmd": [
             ".Build/bin/phpmd ./Classes text phpmd.xml"
