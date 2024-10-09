@@ -27,6 +27,11 @@ class IfOperationAllowedViewHelper extends AbstractConditionViewHelper
         $this->registerArgument('action', 'string', 'Action');
     }
 
+    /**
+     * @param array<string, mixed>|null $arguments
+     *
+     * @return bool
+     */
     protected static function evaluateCondition($arguments = null)
     {
         if (!isset($arguments['client']) || !isset($arguments['action'])) {

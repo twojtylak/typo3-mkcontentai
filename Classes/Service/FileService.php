@@ -152,7 +152,7 @@ class FileService
         $base64Image = explode(';base64,', $base64)[1];
         $binaryData = base64_decode($base64Image);
         $tempFile = GeneralUtility::tempnam('contentai');
-        if (false === $tempFile) {
+        if (!$tempFile) {
             $translatedMessage = LocalizationUtility::translate('labelErrorTempFile', 'mkcontentai') ?? '';
 
             throw new \Exception($translatedMessage);
@@ -197,9 +197,13 @@ class FileService
 
     private function getStorage(?string $storageIdentifier = null): ResourceStorage
     {
-        $storage = (null === $storageIdentifier) ?
-            $this->storageRepository->getDefaultStorage() :
-            $this->storageRepository->findByCombinedIdentifier($storageIdentifier);
+        $storage = null;
+        if (null === $storageIdentifier) {
+            $storage = $this->storageRepository->getDefaultStorage();
+        }
+        if (is_string($storageIdentifier) && strlen($storageIdentifier) > 0) {
+            $storage = $this->storageRepository->findByCombinedIdentifier($storageIdentifier);
+        }
 
         if (null === $storage) {
             $translatedMessage = LocalizationUtility::translate('labelErrorStorage', 'mkcontentai') ?? '';

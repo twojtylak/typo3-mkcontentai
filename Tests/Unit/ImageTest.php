@@ -36,6 +36,7 @@ class ImageTest extends UnitTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
         $this->image = new Image($this->url, $this->text);
     }
 

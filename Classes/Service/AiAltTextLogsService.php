@@ -19,6 +19,7 @@ namespace DMK\MkContentAi\Service;
 
 use DMK\MkContentAi\Domain\Model\AltTextLog;
 use DMK\MkContentAi\Domain\Repository\AltTextLogRepository;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 class AiAltTextLogsService
@@ -35,7 +36,7 @@ class AiAltTextLogsService
         $this->altTextLogsQueryBuilder
             ->delete('tx_mkcontentai_domain_model_alt_text_logs')
             ->where(
-                $this->altTextLogsQueryBuilder->expr()->eq('sys_file_metadata', $this->altTextLogsQueryBuilder->createNamedParameter($parentId, \PDO::PARAM_INT))
+                $this->altTextLogsQueryBuilder->expr()->eq('sys_file_metadata', $this->altTextLogsQueryBuilder->createNamedParameter($parentId, Connection::PARAM_INT))
             );
 
         $this->altTextLogsQueryBuilder->executeStatement();
