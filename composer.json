@@ -42,7 +42,7 @@
         "phpstan/extension-installer": "^1.2",
         "saschaegerer/phpstan-typo3": "^1.8",
         "captainhook/captainhook": "^5.14",
-        "symfony/yaml": "^5.4 || ^6.2",
+        "symfony/yaml": "^5.4 || ^6.2 || ^7.0",
         "phpcompatibility/php-compatibility": "^10@dev",
         "typo3/cms-filelist": "^12.4 || ^13"
     },
