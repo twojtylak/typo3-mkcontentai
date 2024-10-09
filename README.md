@@ -60,6 +60,7 @@ These settings can be adjusted according to your preferences and needs. It's imp
 
 ## Changelog
 
+- 12.2.1: Bugfix which prevented deletion of pages
 - 12.2.0: Improved GUI, added alt-texts logs and security layer in the European Union, improved messages related with generate image operations
 - 12.1.2: Crop and extend image with prompt field in StabilityAI, image to video in StabilityAI, ACL for tt_content: media field
 - 12.1.1: Batch generation of alt texts, ACL for settings tab, Small bugfixes - alt-text generation failed for big images, adjust actions available via context menu on filelist, multiple images generation in tt_content
