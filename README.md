@@ -60,6 +60,7 @@ These settings can be adjusted according to your preferences and needs. It's imp
 
 ## Changelog
 
+- 13.0.3: Fix phpstan findings
 - 13.0.2: Correct bugfix which prevented deletion of pages
 - 13.0.1: Bugfix which prevented deletion of pages
 - 13.0.0: Compatibility with TYPO3 v13, improved GUI, added alt-texts logs and security layer in the European Union, improved messages related with generate image operations
