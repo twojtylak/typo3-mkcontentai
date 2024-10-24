@@ -60,6 +60,7 @@ These settings can be adjusted according to your preferences and needs. It's imp
 
 ## Changelog
 
+- 12.2.3: Fix JS error in BE module
 - 12.2.2: Correct bugfix which prevented deletion of pages
 - 12.2.1: Bugfix which prevented deletion of pages
 - 12.2.0: Improved GUI, added alt-texts logs and security layer in the European Union, improved messages related with generate image operations
