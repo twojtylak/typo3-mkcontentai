@@ -20,7 +20,16 @@ define(['jquery', 'cropper'], function ($, Cropper) {
             );
         });
 
+        initializeCropper();
+    });
+
+    function initializeCropper()
+    {
         const image = document.getElementById('image');
+        if (!image) {
+            return;
+        }
+
         const submitButton = document.querySelector('input[type="submit"]');
         let dragModeValue = 'none';
         let viewModeValue = 1;
@@ -99,5 +108,5 @@ define(['jquery', 'cropper'], function ($, Cropper) {
                 }
             }
         });
-    });
+    }
 });
