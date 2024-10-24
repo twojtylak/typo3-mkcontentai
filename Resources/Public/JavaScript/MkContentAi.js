@@ -21,7 +21,17 @@ $(document).ready(function () {
             `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading`
         );
     });
+
+    initializeCropper();
+});
+
+function initializeCropper()
+{
     const image = document.getElementById('image');
+    if (!image) {
+        return;
+    }
+
     const submitButton = document.querySelector('input[type="submit"]');
     let dragModeValue = 'none';
     let viewModeValue = 1;
@@ -76,8 +86,8 @@ $(document).ready(function () {
 
         let canvas;
         canvas = cropper.getCroppedCanvas({
-            width: minWidth,
-            height: minHeight
+                width: minWidth,
+                height: minHeight
             }
         );
 
@@ -100,4 +110,4 @@ $(document).ready(function () {
             }
         }
     });
-});
+}
