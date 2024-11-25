@@ -83,9 +83,9 @@
             "[ -L .Build/Web/typo3conf/ext/mkcontentai ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/mkcontentai",
             "[ -e .Build/bin/captainhook ] && .Build/bin/captainhook install -f -s || echo 'CaptainHook missing, skip install.'"
         ],
-        "pre-qs": "[ -e .Build/bin/phpcs ] || composer update",
-        "runqs": [
-            "@pre-qs",
+        "pre-qa": "[ -e .Build/bin/phpcs ] || composer update",
+        "runqa": [
+            "@pre-qa",
             "@fix",
             "@lint",
             "@test"
@@ -161,7 +161,7 @@
             ".Build/bin/php-cs-fixer fix -v"
         ],
         "fix": [
-            "@pre-qs",
+            "@pre-qa",
             "@fix:phpcs"
         ]
     }
