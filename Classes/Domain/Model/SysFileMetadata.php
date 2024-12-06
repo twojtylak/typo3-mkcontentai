@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 class SysFileMetadata extends AbstractEntity
 {
     /**
-     * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<SysFileMetadataAltTextLog>
+     * @var ObjectStorage<SysFileMetadataAltTextLog>
      *
      * @TYPO3\CMS\Extbase\Annotation\ORM\Lazy
      */
@@ -51,7 +51,7 @@ class SysFileMetadata extends AbstractEntity
     }
 
     /**
-     * @return \TYPO3\CMS\Extbase\Persistence\ObjectStorage<SysFileMetadataAltTextLog>
+     * @return ObjectStorage<SysFileMetadataAltTextLog>
      */
     public function getAltTextLogs(): ObjectStorage
     {
