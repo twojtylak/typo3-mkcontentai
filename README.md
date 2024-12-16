@@ -88,6 +88,7 @@ These settings can be adjusted according to your preferences and needs. It's imp
 
 ## Changelog
 
+- 13.0.5: Fix storage of long alt texts, update documentation, update coding style
 - 13.0.4: Fix JS error in BE module
 - 13.0.3: Fix phpstan findings
 - 13.0.2: Correct bugfix which prevented deletion of pages
