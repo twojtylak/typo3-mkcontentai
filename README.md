@@ -88,6 +88,7 @@ These settings can be adjusted according to your preferences and needs. It's imp
 
 ## Changelog
 
+- 12.2.5: Fix sorting of copied tt_content elements
 - 12.2.4: Fix storage of long alt texts, update documentation, update coding style
 - 12.2.3: Fix JS error in BE module
 - 12.2.2: Correct bugfix which prevented deletion of pages
