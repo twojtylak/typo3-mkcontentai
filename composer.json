@@ -91,7 +91,11 @@
             "@test"
         ],
         "lint:php": [
-            ".Build/bin/parallel-lint ./Classes"
+            "[ -e .Build/bin/parallel-lint ] || composer update",
+            "echo 'parallel-lint fails with a exception if executed inside the vendor/dmk/mkunileipzig folder'",
+            "[ -e ../../autoload.php ] && mv ../../autoload.php ../../autoload.php.bak",
+            ".Build/bin/parallel-lint --exclude .Build ./",
+            "[ -e ../../autoload.php.bak ] && mv ../../autoload.php.bak ../../autoload.php"
         ],
         "lint:yaml": [
             ".Build/bin/yaml-lint --ansi -n -v ./Configuration ./Resources"
