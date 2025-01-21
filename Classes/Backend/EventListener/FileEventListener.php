@@ -49,6 +49,6 @@ final class FileEventListener
             return;
         }
 
-        $this->altTextLogsService->deleteRelatedChildren($fileMetadataUid);
+        $this->altTextLogsService->deleteRelatedChildren((int) $fileMetadataUid);
     }
 }
